@@ -1,0 +1,29 @@
+# Root .gitignore for Multi-Biz Monorepo
+
+# ── Backend (Maven / Spring Boot) ───────────────────────────
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+*.ear
+*.log
+*.DS_Store
+
+# ── Frontend Web (Vite / Node) ───────────────────────────────
+web/node_modules/
+web/dist/
+web/.vite/
+
+# ── Mobile ───────────────────────────────────────────────────
+mobile/node_modules/
+mobile/.expo/
+mobile/android/
+mobile/ios/
+
+# ── IDE / OS ─────────────────────────────────────────────────
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
