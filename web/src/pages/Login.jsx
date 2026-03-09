@@ -58,16 +58,20 @@ export default function Login() {
         email:    form.email,
         password: form.password,
       })
+      // data is the ApiResponse wrapper; actual payload is in data.data
+      const payload = data.data
+      sessionStorage.setItem('userId',       payload.user.email)
+      sessionStorage.setItem('accessToken',  payload.accessToken)
+      sessionStorage.setItem('refreshToken', payload.refreshToken)
+      sessionStorage.setItem('role',         payload.user.role)
       setSuccess(`Welcome back! Redirecting…`)
-      // Store userId for later use
-      if (data.userId) sessionStorage.setItem('userId', data.userId)
       setTimeout(() => navigate('/dashboard'), 1200)
     } catch (err) {
       const status = err.response?.status
       if (status === 401) {
         setError('Incorrect email or password.')
       } else {
-        setError(err.response?.data?.error ?? 'Login failed. Please try again.')
+        setError(err.response?.data?.error?.message ?? 'Login failed. Please try again.')
       }
     } finally {
       setLoading(false)

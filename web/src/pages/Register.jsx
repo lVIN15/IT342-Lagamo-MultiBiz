@@ -34,7 +34,7 @@ export default function Register() {
   const navigate = useNavigate()
 
   const [form, setForm] = useState({
-    firstName: '', lastName: '', email: '', password: '', confirmPassword: '',
+    firstname: '', lastname: '', email: '', password: '', confirmPassword: '',
   })
   const [showPwd, setShowPwd]         = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -64,15 +64,15 @@ export default function Register() {
     setLoading(true)
     try {
       await axios.post(`${API_BASE}/api/auth/register`, {
-        firstName: form.firstName,
-        lastName:  form.lastName,
+        firstname: form.firstname,
+        lastname:  form.lastname,
         email:     form.email,
         password:  form.password,
       })
       setSuccess('Account created! Redirecting to login…')
       setTimeout(() => navigate('/login'), 1500)
     } catch (err) {
-      const msg = err.response?.data?.error ?? 'Registration failed. Please try again.'
+      const msg = err.response?.data?.error?.message ?? 'Registration failed. Please try again.'
       setError(msg)
     } finally {
       setLoading(false)
@@ -117,9 +117,9 @@ export default function Register() {
             <div className="flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
               <input
-                type="text" name="firstName" required
+                type="text" name="firstname" required
                 placeholder="Jane"
-                value={form.firstName} onChange={handleChange}
+                value={form.firstname} onChange={handleChange}
                 className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-800 placeholder-gray-300 outline-none focus:ring-2 focus:border-transparent transition"
                 style={{ '--tw-ring-color': '#1a3350' }}
               />
@@ -127,9 +127,9 @@ export default function Register() {
             <div className="flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
               <input
-                type="text" name="lastName" required
+                type="text" name="lastname" required
                 placeholder="Doe"
-                value={form.lastName} onChange={handleChange}
+                value={form.lastname} onChange={handleChange}
                 className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-800 placeholder-gray-300 outline-none focus:ring-2 focus:border-transparent transition"
               />
             </div>
