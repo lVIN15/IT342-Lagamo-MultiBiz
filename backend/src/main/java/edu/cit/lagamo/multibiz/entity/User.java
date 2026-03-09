@@ -22,10 +22,10 @@ public class User {
     private String passwordHash;
 
     @Column(name = "first_name", nullable = false)
-    private String firstName;
+    private String firstname;
 
     @Column(name = "last_name", nullable = false)
-    private String lastName;
+    private String lastname;
 
     @Column(nullable = false)
     private String role = "OWNER";
@@ -61,11 +61,11 @@ public class User {
     public String getPasswordHash() { return passwordHash; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public String getFirstname() { return firstname; }
+    public void setFirstname(String firstname) { this.firstname = firstname; }
 
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
+    public String getLastname() { return lastname; }
+    public void setLastname(String lastname) { this.lastname = lastname; }
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }

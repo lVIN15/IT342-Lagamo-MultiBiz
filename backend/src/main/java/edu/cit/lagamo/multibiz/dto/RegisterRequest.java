@@ -7,10 +7,10 @@ import jakarta.validation.constraints.Size;
 public class RegisterRequest {
 
     @NotBlank(message = "First name is required")
-    private String firstName;
+    private String firstname;
 
     @NotBlank(message = "Last name is required")
-    private String lastName;
+    private String lastname;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be valid")
@@ -22,11 +22,11 @@ public class RegisterRequest {
 
     public RegisterRequest() {}
 
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public String getFirstname() { return firstname; }
+    public void setFirstname(String firstname) { this.firstname = firstname; }
 
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
+    public String getLastname() { return lastname; }
+    public void setLastname(String lastname) { this.lastname = lastname; }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
