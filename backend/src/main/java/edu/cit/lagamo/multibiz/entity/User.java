@@ -1,5 +1,6 @@
 package edu.cit.lagamo.multibiz.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class User {
     private String email;
 
     @Column(name = "password_hash", nullable = false)
+    @JsonIgnore
     private String passwordHash;
 
     @Column(name = "first_name", nullable = false)
@@ -39,12 +41,15 @@ public class User {
     // ── Relationships ────────────────────────────────────────────────────────
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Business> businesses = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<RefreshToken> refreshTokens = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<BusinessStaff> businessStaffEntries = new ArrayList<>();
 
     // ── Constructors ─────────────────────────────────────────────────────────
