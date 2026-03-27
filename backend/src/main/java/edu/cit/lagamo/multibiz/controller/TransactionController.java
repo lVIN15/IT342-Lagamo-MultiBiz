@@ -1,86 +1,83 @@
 package edu.cit.lagamo.multibiz.controller;
 
+import edu.cit.lagamo.multibiz.dto.ApiResponse;
 import edu.cit.lagamo.multibiz.dto.TransactionRequest;
-import edu.cit.lagamo.multibiz.entity.Business;
 import edu.cit.lagamo.multibiz.entity.Transaction;
-import edu.cit.lagamo.multibiz.entity.User;
-import edu.cit.lagamo.multibiz.repository.BusinessRepository;
-import edu.cit.lagamo.multibiz.repository.TransactionRepository;
-import edu.cit.lagamo.multibiz.repository.UserRepository;
+import edu.cit.lagamo.multibiz.service.TransactionService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/transactions")
-@CrossOrigin(origins = "*")
+@RequestMapping("/api/v1/transactions")
 public class TransactionController {
 
-    private final TransactionRepository transactionRepository;
-    private final BusinessRepository    businessRepository;
-    private final UserRepository        userRepository;
+    private final TransactionService transactionService;
 
-    public TransactionController(TransactionRepository transactionRepository,
-                                 BusinessRepository businessRepository,
-                                 UserRepository userRepository) {
-        this.transactionRepository = transactionRepository;
-        this.businessRepository    = businessRepository;
-        this.userRepository        = userRepository;
+    public TransactionController(TransactionService transactionService) {
+        this.transactionService = transactionService;
     }
-
-    // ── POST /api/transactions ───────────────────────────────────────────────
 
     @PostMapping
-    public ResponseEntity<?> logTransaction(@Valid @RequestBody TransactionRequest request) {
+    @PreAuthorize("hasAnyAuthority('STAFF', 'OWNER')")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> logTransaction(
+            @Valid @RequestBody TransactionRequest request, 
+            Authentication authentication) {
 
-        Business business = businessRepository.findById(request.getBusinessId()).orElse(null);
-        if (business == null) {
-            return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", "Business not found"));
+        ApiResponse<Map<String, Object>> response = transactionService.logTransaction(request, authentication.getName());
+        
+        if (!response.isSuccess()) {
+            if ("UNAUTHORIZED".equals(response.getError().getCode())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+            if ("FORBIDDEN".equals(response.getError().getCode())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        User staff = userRepository.findById(request.getStaffId()).orElse(null);
-        if (staff == null) {
-            return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", "Staff user not found"));
-        }
-
-        Transaction tx = new Transaction();
-        tx.setBusiness(business);
-        tx.setStaff(staff);
-        tx.setAmount(request.getAmount());
-        tx.setDescription(request.getDescription());
-        tx.setStatus(request.getStatus());
-
-        Transaction saved = transactionRepository.save(tx);
-
-        return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(Map.of(
-                "message",       "Transaction logged successfully",
-                "transactionId", saved.getId().toString()
-            ));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
-    // ── GET /api/transactions/business/{businessId} ──────────────────────────
 
     @GetMapping("/business/{businessId}")
-    public ResponseEntity<?> getByBusiness(@PathVariable UUID businessId) {
+    @PreAuthorize("hasAnyAuthority('STAFF', 'OWNER')")
+    public ResponseEntity<ApiResponse<List<Transaction>>> getTransactionsByBusiness(
+            @PathVariable UUID businessId,
+            Authentication authentication) {
 
-        if (!businessRepository.existsById(businessId)) {
-            return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", "Business not found"));
+        ApiResponse<List<Transaction>> response = transactionService.getTransactionsByBusiness(businessId, authentication.getName());
+
+        if (!response.isSuccess()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/upload")
+    @PreAuthorize("hasAnyAuthority('STAFF', 'OWNER')")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> uploadReceipt(
+            @PathVariable UUID id,
+            @RequestParam("file") MultipartFile file,
+            Authentication authentication) {
+
+        ApiResponse<Map<String, Object>> response = transactionService.uploadReceipt(id, file, authentication.getName());
+        
+        if (!response.isSuccess()) {
+            if ("FORBIDDEN".equals(response.getError().getCode())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
-        List<Transaction> transactions = transactionRepository.findByBusinessId(businessId);
-        return ResponseEntity.ok(transactions);
+        return ResponseEntity.ok(response);
     }
 }
+
