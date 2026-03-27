@@ -11,4 +11,8 @@
 
 ### Business & Transaction Features
 - **What was implemented?** Built out the REST APIs and Services for Business Management and Billing (`BusinessController`, `TransactionController`, `BusinessService`, `TransactionService`). Designed scalable entities mapped with JPA/Hibernate (`Business`, `BusinessStaff`, `Transaction`), and structured incoming payload DTOs like `TransactionRequest`.
+
+### Web UI & Dashboard
+- **What was implemented?** Designed and implemented the primary frontend structure, including the `Sidebar` and `TopBar` layout components. Created dynamic views for `Dashboard`, `Businesses`, `BusinessDetail`, `Billing`, and `ExportReports`. Also centralized shared UI components like `Button`, `Input`, `Modal` (`AddBusinessModal`, `AddStaffModal`, `EditBusinessModal`, etc.), and `Toast` for a consistent, responsive, and reusable design system.
+
 
