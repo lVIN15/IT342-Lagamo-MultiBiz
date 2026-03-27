@@ -1,5 +1,6 @@
 package edu.cit.lagamo.multibiz.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,10 +16,12 @@ public class BusinessStaff {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"businesses", "refreshTokens", "businessStaffEntries", "passwordHash"})
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "business_id", nullable = false)
+    @JsonIgnoreProperties({"owner", "businessStaff", "transactions"})
     private Business business;
 
     @Column(name = "assigned_at", nullable = false, updatable = false)
