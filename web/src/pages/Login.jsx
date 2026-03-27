@@ -60,10 +60,11 @@ export default function Login() {
       })
       // data is the ApiResponse wrapper; actual payload is in data.data
       const payload = data.data
-      sessionStorage.setItem('userId',       payload.user.email)
-      sessionStorage.setItem('accessToken',  payload.accessToken)
-      sessionStorage.setItem('refreshToken', payload.refreshToken)
-      sessionStorage.setItem('role',         payload.user.role)
+      localStorage.setItem('user', JSON.stringify(payload.user))
+      localStorage.setItem('token',  payload.accessToken)
+      // We can also store role or refresh token if needed, but App.jsx and Dashboard.jsx expect 'user' and 'token'
+      localStorage.setItem('refreshToken', payload.refreshToken)
+      localStorage.setItem('role',         payload.user.role)
       setSuccess(`Welcome back! Redirecting…`)
       setTimeout(() => navigate('/dashboard'), 1200)
     } catch (err) {
