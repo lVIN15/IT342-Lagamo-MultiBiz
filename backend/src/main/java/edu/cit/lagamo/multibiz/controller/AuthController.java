@@ -7,6 +7,7 @@ import edu.cit.lagamo.multibiz.entity.RefreshToken;
 import edu.cit.lagamo.multibiz.entity.User;
 import edu.cit.lagamo.multibiz.repository.RefreshTokenRepository;
 import edu.cit.lagamo.multibiz.repository.UserRepository;
+import edu.cit.lagamo.multibiz.service.EmailService;
 import edu.cit.lagamo.multibiz.service.JwtService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -21,22 +22,24 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
 public class AuthController {
 
-    private final UserRepository         userRepository;
+    private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final PasswordEncoder        passwordEncoder;
-    private final JwtService             jwtService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final EmailService emailService;
 
     public AuthController(UserRepository userRepository,
-                          RefreshTokenRepository refreshTokenRepository,
-                          PasswordEncoder passwordEncoder,
-                          JwtService jwtService) {
-        this.userRepository         = userRepository;
+            RefreshTokenRepository refreshTokenRepository,
+            PasswordEncoder passwordEncoder,
+            JwtService jwtService,
+            EmailService emailService) {
+        this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
-        this.passwordEncoder        = passwordEncoder;
-        this.jwtService             = jwtService;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.emailService = emailService;
     }
 
     // ── POST /api/auth/register ───────────────────────────────────────────────
@@ -47,8 +50,8 @@ public class AuthController {
         // Duplicate email check
         if (userRepository.existsByEmail(request.getEmail())) {
             return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.fail("EMAIL_ALREADY_EXISTS", "Email is already registered"));
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.fail("EMAIL_ALREADY_EXISTS", "Email is already registered"));
         }
 
         // Persist new user
@@ -57,27 +60,41 @@ public class AuthController {
         user.setLastname(request.getLastname());
         user.setEmail(request.getEmail());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+
+        // RBAC Logic: Respect incoming role
+        if ("STAFF".equalsIgnoreCase(request.getRole())) {
+            user.setRole("STAFF");
+        } else {
+            user.setRole("OWNER"); // Default to Owner for raw signups
+        }
+
         userRepository.save(user);
 
+        // Async Email Trigger: Only if suppressed flag is not false
+        if (request.isSendWelcomeEmail()) {
+            emailService.sendWelcomeEmail(user.getEmail(), user.getFirstname());
+        }
+
         // Generate tokens & persist refresh token
-        String accessToken  = jwtService.generateAccessToken(user);
+        String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
         persistRefreshToken(user, refreshToken);
 
         // Build SDD data payload (no role for Register)
         Map<String, Object> userMap = new LinkedHashMap<>();
-        userMap.put("email",     user.getEmail());
+        userMap.put("id", user.getId().toString());
+        userMap.put("email", user.getEmail());
         userMap.put("firstname", user.getFirstname());
-        userMap.put("lastname",  user.getLastname());
+        userMap.put("lastname", user.getLastname());
 
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("user",         userMap);
-        data.put("accessToken",  accessToken);
+        data.put("user", userMap);
+        data.put("accessToken", accessToken);
         data.put("refreshToken", refreshToken);
 
         return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(ApiResponse.ok(data));
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.ok(data));
     }
 
     // ── POST /api/auth/login ─────────────────────────────────────────────────
@@ -88,30 +105,31 @@ public class AuthController {
         Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
 
         if (userOpt.isEmpty() ||
-            !passwordEncoder.matches(request.getPassword(), userOpt.get().getPasswordHash())) {
+                !passwordEncoder.matches(request.getPassword(), userOpt.get().getPasswordHash())) {
             return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.fail("INVALID_CREDENTIALS", "Invalid email or password"));
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.fail("INVALID_CREDENTIALS", "Invalid email or password"));
         }
 
         User user = userOpt.get();
 
         // Generate tokens & persist refresh token (rotate: delete old ones first)
         refreshTokenRepository.deleteByUserId(user.getId());
-        String accessToken  = jwtService.generateAccessToken(user);
+        String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
         persistRefreshToken(user, refreshToken);
 
         // Build SDD data payload (role included for Login)
         Map<String, Object> userMap = new LinkedHashMap<>();
-        userMap.put("email",     user.getEmail());
+        userMap.put("id", user.getId().toString());
+        userMap.put("email", user.getEmail());
         userMap.put("firstname", user.getFirstname());
-        userMap.put("lastname",  user.getLastname());
-        userMap.put("role",      user.getRole());
+        userMap.put("lastname", user.getLastname());
+        userMap.put("role", user.getRole());
 
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("user",         userMap);
-        data.put("accessToken",  accessToken);
+        data.put("user", userMap);
+        data.put("accessToken", accessToken);
         data.put("refreshToken", refreshToken);
 
         return ResponseEntity.ok(ApiResponse.ok(data));
@@ -124,7 +142,7 @@ public class AuthController {
         rt.setUser(user);
         rt.setToken(rawToken);
         rt.setExpiresAt(LocalDateTime.now()
-            .plusSeconds(jwtService.getRefreshTokenMs() / 1000));
+                .plusSeconds(jwtService.getRefreshTokenMs() / 1000));
         refreshTokenRepository.save(rt);
     }
 }
