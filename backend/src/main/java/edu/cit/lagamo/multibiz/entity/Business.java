@@ -1,5 +1,7 @@
 package edu.cit.lagamo.multibiz.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ public class Business {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "owner_id", nullable = false)
+    @JsonIgnoreProperties({"businesses", "refreshTokens", "businessStaffEntries", "passwordHash"})
     private User owner;
 
     @Column(nullable = false)
@@ -34,9 +37,11 @@ public class Business {
     // ── Relationships ────────────────────────────────────────────────────────
 
     @OneToMany(mappedBy = "business", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<BusinessStaff> businessStaff = new ArrayList<>();
 
     @OneToMany(mappedBy = "business", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Transaction> transactions = new ArrayList<>();
 
     // ── Constructors ─────────────────────────────────────────────────────────
