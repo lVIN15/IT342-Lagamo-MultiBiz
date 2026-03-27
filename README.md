@@ -8,4 +8,7 @@
 
 ### Authentication & User Management
 - **What was implemented?** Created Registration and Login REST endpoints (`AuthController`), updated the `User` entity to map correctly with the frontend DTO (`RegisterRequest`), and designed generic `ApiResponse` wrapping. Built dynamic HTML templates in `EmailService`. On the frontend, created pixel-perfect `LoginForm` and `RegisterForm` components per Figma designs, integrating Axios API calls, validation, and dynamic toast notifications, all orchestrated inside `Login.jsx`.
+
+### Business & Transaction Features
+- **What was implemented?** Built out the REST APIs and Services for Business Management and Billing (`BusinessController`, `TransactionController`, `BusinessService`, `TransactionService`). Designed scalable entities mapped with JPA/Hibernate (`Business`, `BusinessStaff`, `Transaction`), and structured incoming payload DTOs like `TransactionRequest`.
 
