@@ -20,6 +20,9 @@ public class RegisterRequest {
     @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 
+    private String role; // Optional RBAC role payload (e.g., "STAFF")
+    private boolean sendWelcomeEmail = true; // Default to true
+
     public RegisterRequest() {}
 
     public String getFirstname() { return firstname; }
@@ -33,4 +36,10 @@ public class RegisterRequest {
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
+
+    public boolean isSendWelcomeEmail() { return sendWelcomeEmail; }
+    public void setSendWelcomeEmail(boolean sendWelcomeEmail) { this.sendWelcomeEmail = sendWelcomeEmail; }
 }
