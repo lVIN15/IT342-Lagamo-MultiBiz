@@ -4,4 +4,8 @@
 ## Phase 2 Progress
 
 ### Infrastructure & Security Core
-- **What was implemented?** Updated Maven dependencies for security and web features. Configured Spring Security with stateless JWT authentication, added dynamic Data Source properties, and set up a custom `JwtAuthenticationFilter` for robust token-based endpoint protection. Also enabled required base packages on the core Application class.
+- **What was implemented?** Updated Maven dependencies for security and web features. Configured Spring Security with stateless JWT authentication, added dynamic Data Source properties, and set up a custom `JwtAuthenticationFilter` for robust token-based endpoint protection. Also enabled required base packages on the core Application class.
+
+### Authentication & User Management
+- **What was implemented?** Created Registration and Login REST endpoints (`AuthController`), updated the `User` entity to map correctly with the frontend DTO (`RegisterRequest`), and designed generic `ApiResponse` wrapping. Built dynamic HTML templates in `EmailService`. On the frontend, created pixel-perfect `LoginForm` and `RegisterForm` components per Figma designs, integrating Axios API calls, validation, and dynamic toast notifications, all orchestrated inside `Login.jsx`.
+
