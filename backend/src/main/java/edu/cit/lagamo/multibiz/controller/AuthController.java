@@ -1,12 +1,14 @@
 package edu.cit.lagamo.multibiz.controller;
 
 import edu.cit.lagamo.multibiz.dto.ApiResponse;
+import edu.cit.lagamo.multibiz.dto.GoogleTokenRequest;
 import edu.cit.lagamo.multibiz.dto.LoginRequest;
 import edu.cit.lagamo.multibiz.dto.RegisterRequest;
 import edu.cit.lagamo.multibiz.entity.RefreshToken;
 import edu.cit.lagamo.multibiz.entity.User;
 import edu.cit.lagamo.multibiz.repository.RefreshTokenRepository;
 import edu.cit.lagamo.multibiz.repository.UserRepository;
+import edu.cit.lagamo.multibiz.service.AuthService;
 import edu.cit.lagamo.multibiz.service.EmailService;
 import edu.cit.lagamo.multibiz.service.JwtService;
 import jakarta.validation.Valid;
@@ -29,17 +31,20 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final EmailService emailService;
+    private final AuthService authService;
 
     public AuthController(UserRepository userRepository,
             RefreshTokenRepository refreshTokenRepository,
             PasswordEncoder passwordEncoder,
             JwtService jwtService,
-            EmailService emailService) {
+            EmailService emailService,
+            AuthService authService) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.emailService = emailService;
+        this.authService = authService;
     }
 
     // ── POST /api/auth/register ───────────────────────────────────────────────
@@ -132,6 +137,14 @@ public class AuthController {
         data.put("accessToken", accessToken);
         data.put("refreshToken", refreshToken);
 
+        return ResponseEntity.ok(ApiResponse.ok(data));
+    }
+
+    // ── POST /api/auth/google ────────────────────────────────────────────────
+    
+    @PostMapping("/google")
+    public ResponseEntity<ApiResponse<?>> googleLogin(@Valid @RequestBody GoogleTokenRequest request) {
+        Map<String, Object> data = authService.verifyGoogleTokenAndAuthenticate(request.getToken());
         return ResponseEntity.ok(ApiResponse.ok(data));
     }
 
