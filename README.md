@@ -24,4 +24,8 @@
 ### Mobile Infrastructure & Shared Assets
 - **What was implemented?** Integrated Retrofit2, Gson, and Kotlin Coroutines for backend communication. Created custom vector assets for the login banner and income upload area. Designed a custom Material-based Toast system for professional success and error notifications.
 
+### Mobile Login & Dashboard
+- **What was implemented?** Finalized the Login workflow with top-positioned Toasts, descriptive error parsing, and a 1.5s delay before navigating to the home screen. Implemented the Home dashboard Activity with an assigned location view and income logging layout.
+
+
 
