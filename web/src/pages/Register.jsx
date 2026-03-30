@@ -1,20 +1,9 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { GoogleLogin } from '@react-oauth/google'
 
 const API_BASE = 'http://localhost:8080'
-
-// ── Google colour SVG (inline, no external dep) ─────────────────────────────
-function GoogleIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
-      <path fill="#EA4335" d="M24 9.5c3.54 0 6.7 1.22 9.19 3.22l6.85-6.85C35.9 2.38 30.28 0 24 0 14.82 0 6.96 5.43 3.19 13.32l7.98 6.2C13.12 13.36 18.12 9.5 24 9.5z"/>
-      <path fill="#4285F4" d="M46.1 24.55c0-1.64-.15-3.22-.41-4.75H24v8.98h12.43c-.54 2.9-2.17 5.36-4.62 7.01l7.19 5.58C43.38 37.3 46.1 31.4 46.1 24.55z"/>
-      <path fill="#FBBC05" d="M11.17 28.48A14.56 14.56 0 0 1 9.5 24c0-1.56.27-3.08.67-4.48L2.2 13.32A23.93 23.93 0 0 0 0 24c0 3.86.92 7.5 2.56 10.72l8.61-6.24z"/>
-      <path fill="#34A853" d="M24 48c6.28 0 11.56-2.08 15.41-5.66l-7.19-5.58C30.16 38.8 27.24 39.5 24 39.5c-5.88 0-10.88-3.86-12.83-9.02l-8.61 6.24C6.96 42.57 14.82 48 24 48z"/>
-    </svg>
-  )
-}
 
 // ── Eye / EyeOff toggle icons ─────────────────────────────────────────────
 function EyeIcon({ open }) {
@@ -77,6 +66,32 @@ export default function Register() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setError('')
+    setSuccess('')
+    setLoading(true)
+    try {
+      const { data } = await axios.post(`${API_BASE}/api/auth/google`, {
+        token: credentialResponse.credential,
+      })
+      const payload = data.data
+      localStorage.setItem('user', JSON.stringify(payload.user))
+      localStorage.setItem('token',  payload.accessToken)
+      localStorage.setItem('refreshToken', payload.refreshToken)
+      localStorage.setItem('role',         payload.user.role)
+      setSuccess(`Account synced! Redirecting…`)
+      setTimeout(() => navigate('/dashboard'), 1200)
+    } catch (err) {
+      setError(err.response?.data?.error?.message ?? 'Google signup failed. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGoogleError = () => {
+    setError('Google signup was unsuccessful.')
   }
 
   return (
@@ -198,13 +213,18 @@ export default function Register() {
           <hr className="flex-1 border-gray-200" />
         </div>
 
-        {/* Google (UI only) */}
-        <button
-          type="button"
-          className="w-full flex items-center justify-center gap-2.5 border border-gray-200 rounded-xl py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition cursor-pointer">
-          <GoogleIcon />
-          Sign up with Google
-        </button>
+        {/* Google OAuth Login */}
+        <div className="flex justify-center w-full">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+            shape="rectangular"
+            theme="outline"
+            size="large"
+            width="100%"
+            text="signup_with"
+          />
+        </div>
 
         {/* Sign in link */}
         <p className="mt-6 text-center text-sm text-gray-500">
