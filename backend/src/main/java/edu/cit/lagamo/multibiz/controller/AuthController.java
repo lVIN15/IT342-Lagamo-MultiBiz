@@ -117,7 +117,22 @@ public class AuthController {
         }
 
         User user = userOpt.get();
+        // For Adding another Attribute to the User
 
+        if (!user.isActive()) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.fail("INACTIVE_ACCOUNT",
+                            "Your account is no longer active. Please contact your administrator for assistance."));
+        }
+
+        if ("OWNER".equalsIgnoreCase(user.getRole())) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.fail("OWNER_NOT_ALLOWED",
+                            "This account is registered as an owner. Please use the web platform to access your account."));
+        }
+        // END
         // Generate tokens & persist refresh token (rotate: delete old ones first)
         refreshTokenRepository.deleteByUserId(user.getId());
         String accessToken = jwtService.generateAccessToken(user);
@@ -141,7 +156,7 @@ public class AuthController {
     }
 
     // ── POST /api/auth/google ────────────────────────────────────────────────
-    
+
     @PostMapping("/google")
     public ResponseEntity<ApiResponse<?>> googleLogin(@Valid @RequestBody GoogleTokenRequest request) {
         Map<String, Object> data = authService.verifyGoogleTokenAndAuthenticate(request.getToken());

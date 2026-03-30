@@ -52,35 +52,90 @@ public class User {
     @JsonIgnore
     private List<BusinessStaff> businessStaffEntries = new ArrayList<>();
 
+    // Another Attribute to the User
+    @Column(name = "is_active", nullable = false, columnDefinition = "boolean default true")
+    private boolean isActive = true;
+
     // ── Constructors ─────────────────────────────────────────────────────────
 
-    public User() {}
+    public User() {
+    }
 
     // ── Getters & Setters ────────────────────────────────────────────────────
+    // Another Attribute to the User
+    public boolean isActive() {
+        return isActive;
+    }
 
-    public UUID getId() { return id; }
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public UUID getId() {
+        return id;
+    }
 
-    public String getPasswordHash() { return passwordHash; }
-    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+    public String getEmail() {
+        return email;
+    }
 
-    public String getFirstname() { return firstname; }
-    public void setFirstname(String firstname) { this.firstname = firstname; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public String getLastname() { return lastname; }
-    public void setLastname(String lastname) { this.lastname = lastname; }
+    public String getPasswordHash() {
+        return passwordHash;
+    }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
 
-    public String getSubscriptionStatus() { return subscriptionStatus; }
-    public void setSubscriptionStatus(String subscriptionStatus) { this.subscriptionStatus = subscriptionStatus; }
+    public String getFirstname() {
+        return firstname;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
 
-    public List<Business> getBusinesses() { return businesses; }
-    public List<RefreshToken> getRefreshTokens() { return refreshTokens; }
-    public List<BusinessStaff> getBusinessStaffEntries() { return businessStaffEntries; }
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getSubscriptionStatus() {
+        return subscriptionStatus;
+    }
+
+    public void setSubscriptionStatus(String subscriptionStatus) {
+        this.subscriptionStatus = subscriptionStatus;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public List<Business> getBusinesses() {
+        return businesses;
+    }
+
+    public List<RefreshToken> getRefreshTokens() {
+        return refreshTokens;
+    }
+
+    public List<BusinessStaff> getBusinessStaffEntries() {
+        return businessStaffEntries;
+    }
 }
