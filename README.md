@@ -20,4 +20,8 @@
 
 ### Mobile Security & Staff Restrictions
 - **What was implemented?** Implemented a robust authentication "kill-switch" via the `is_active` attribute in the `User` entity, ensuring data integrity while allowing for soft-deletes. Enforced strict Role-Based Access Control (RBAC) on the backend to restrict mobile application access exclusively to `STAFF` roles, rejecting `OWNER` logins with descriptive errors.
+
+### Mobile Infrastructure & Shared Assets
+- **What was implemented?** Integrated Retrofit2, Gson, and Kotlin Coroutines for backend communication. Created custom vector assets for the login banner and income upload area. Designed a custom Material-based Toast system for professional success and error notifications.
+
 
