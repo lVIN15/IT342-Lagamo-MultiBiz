@@ -15,4 +15,5 @@
 ### Web UI & Dashboard
 - **What was implemented?** Designed and implemented the primary frontend structure, including the `Sidebar` and `TopBar` layout components. Created dynamic views for `Dashboard`, `Businesses`, `BusinessDetail`, `Billing`, and `ExportReports`. Also centralized shared UI components like `Button`, `Input`, `Modal` (`AddBusinessModal`, `AddStaffModal`, `EditBusinessModal`, etc.), and `Toast` for a consistent, responsive, and reusable design system.
 
-
+### Google OAuth Login 
+- Done Requirement 4.2: Google OAuth Login (Decoupled JWT Flow).
