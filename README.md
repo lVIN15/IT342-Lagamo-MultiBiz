@@ -19,7 +19,7 @@
 - Done Requirement 4.2: Google OAuth Login (Decoupled JWT Flow).
 
 ### Mobile Security & Staff Restrictions
-- **What was implemented?** Implemented a robust authentication "kill-switch" via the `is_active` attribute in the `User` entity, ensuring data integrity while allowing for soft-deletes. Enforced strict Role-Based Access Control (RBAC) on the backend to restrict mobile application access exclusively to `STAFF` roles, rejecting `OWNER` logins with descriptive errors.
+- **What was implemented?** Implemented a robust authentication "kill-switch" via the `is_active` attribute in the `User` entity, ensuring data integrity while allowing for soft-deletes. Enforced platform-aware Role-Based Access Control (RBAC) on the backend; mobile application access is restricted exclusively to `STAFF` roles using a custom `X-Platform` header verification, ensuring `OWNER` accounts can login to the Web Dashboard without restriction while being blocked from mobile tools.
 
 ### Mobile Infrastructure & Shared Assets
 - **What was implemented?** Integrated Retrofit2, Gson, and Kotlin Coroutines for backend communication. Created custom vector assets for the login banner and income upload area. Designed a custom Material-based Toast system for professional success and error notifications.
