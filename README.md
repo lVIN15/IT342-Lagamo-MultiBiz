@@ -27,4 +27,7 @@
 ### Mobile Login & Dashboard
 - **What was implemented?** Finalized the Login workflow with top-positioned Toasts, descriptive error parsing, and a 1.5s delay before navigating to the home screen. Implemented the Home dashboard Activity with an assigned location view and income logging layout.
 
+### Mobile Navigation & Transaction Logs
+- **What was implemented?** Transitioned the Android app to a Modular Navigation Architecture by creating a reusable Bottom Navigation component and centralized routing utility (`BottomNavUtils`). Implemented the Transaction Logs feature, complete with a custom RecyclerView adapter (`LogsAdapter`) to display transaction history, fully integrated with the new modular navigation logic.
+
 **IT342 Phase 2 – Login for Mobile is successfully completed.**
