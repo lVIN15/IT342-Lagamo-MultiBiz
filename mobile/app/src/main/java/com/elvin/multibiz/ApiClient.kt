@@ -3,6 +3,7 @@ package com.elvin.multibiz
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 // 1. Data Classes for request/response
@@ -39,7 +40,10 @@ data class ApiResponse<T>(
 // 2. Api Interface
 interface MultiBizApi {
     @POST("api/auth/login")
-    suspend fun login(@Body request: LoginRequest): retrofit2.Response<ApiResponse<ContentData>>
+    suspend fun login(
+        @Header("X-Platform") platform: String,
+        @Body request: LoginRequest
+    ): retrofit2.Response<ApiResponse<ContentData>>
 }
 
 // 3. Retrofit Singleton
