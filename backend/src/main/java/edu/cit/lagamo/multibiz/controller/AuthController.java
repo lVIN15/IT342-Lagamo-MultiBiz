@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -105,7 +106,9 @@ public class AuthController {
     // ── POST /api/auth/login ─────────────────────────────────────────────────
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<?>> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<ApiResponse<?>> login(
+            @Valid @RequestBody LoginRequest request,
+            @RequestHeader(value = "X-Platform", required = false) String platform) {
 
         Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
 
@@ -126,11 +129,12 @@ public class AuthController {
                             "Your account is no longer active. Please contact your administrator for assistance."));
         }
 
-        if ("OWNER".equalsIgnoreCase(user.getRole())) {
+        // Mobile-only: Block OWNER logins from the Android app
+        if ("android".equalsIgnoreCase(platform) && "OWNER".equalsIgnoreCase(user.getRole())) {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .body(ApiResponse.fail("OWNER_NOT_ALLOWED",
-                            "This account is registered as an owner. Please use the web platform to access your account."));
+                            "This account is registered as an Owner. Please use the Web platform to access your account."));
         }
         // END
         // Generate tokens & persist refresh token (rotate: delete old ones first)
