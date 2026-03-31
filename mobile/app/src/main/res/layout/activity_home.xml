@@ -43,7 +43,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavBar"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNav"
         app:layout_constraintTop_toBottomOf="@id/topNavBar">
 
         <LinearLayout
@@ -230,75 +230,12 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Bottom Navigation Bar -->
-    <LinearLayout
-        android:id="@+id/bottomNavBar"
+    <!-- Bottom Navigation Bar (reusable custom component) -->
+    <include
+        android:id="@+id/bottomNav"
+        layout="@layout/layout_bottom_nav"
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:background="#FFFFFF"
-        android:elevation="8dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@android:drawable/ic_dialog_map"
-                app:tint="#123458" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Home"
-                android:textColor="#123458"
-                android:textSize="10sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_sort_by_size"
-                app:tint="#9E9E9E" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Logs"
-                android:textColor="#9E9E9E"
-                android:textSize="10sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_info_details"
-                app:tint="#9E9E9E" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Profile"
-                android:textColor="#9E9E9E"
-                android:textSize="10sp" />
-        </LinearLayout>
-
-    </LinearLayout>
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
