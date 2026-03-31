@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Reusable Bottom Navigation Component
+    Usage: <include layout="@layout/layout_bottom_nav" android:id="@+id/bottomNav" />
+    After inflating, call: BottomNavUtils.setup(activity, rootView, R.id.nav_tab_home)
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:background="#FFFFFF"
+    android:elevation="8dp"
+    android:orientation="horizontal">
+
+    <!-- Home Tab -->
+    <LinearLayout
+        android:id="@+id/nav_tab_home"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <ImageView
+            android:id="@+id/nav_icon_home"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_menu_today"
+            app:tint="#9E9E9E" />
+
+        <TextView
+            android:id="@+id/nav_label_home"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="Home"
+            android:textColor="#9E9E9E"
+            android:textSize="10sp" />
+
+    </LinearLayout>
+
+    <!-- Logs Tab -->
+    <LinearLayout
+        android:id="@+id/nav_tab_logs"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <ImageView
+            android:id="@+id/nav_icon_logs"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_menu_sort_by_size"
+            app:tint="#9E9E9E" />
+
+        <TextView
+            android:id="@+id/nav_label_logs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="Logs"
+            android:textColor="#9E9E9E"
+            android:textSize="10sp" />
+
+    </LinearLayout>
+
+    <!-- Profile Tab -->
+    <LinearLayout
+        android:id="@+id/nav_tab_profile"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <ImageView
+            android:id="@+id/nav_icon_profile"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_menu_myplaces"
+            app:tint="#9E9E9E" />
+
+        <TextView
+            android:id="@+id/nav_label_profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="Profile"
+            android:textColor="#9E9E9E"
+            android:textSize="10sp" />
+
+    </LinearLayout>
+
+</LinearLayout>
