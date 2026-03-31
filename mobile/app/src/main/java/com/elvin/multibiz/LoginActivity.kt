@@ -55,7 +55,7 @@ class LoginActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val request = LoginRequest(email, password)
-                val response: Response<ApiResponse<ContentData>> = ApiClient.api.login(request)
+                val response: Response<ApiResponse<ContentData>> = ApiClient.api.login("android", request)
 
                 if (response.isSuccessful) {
                     val body = response.body()
