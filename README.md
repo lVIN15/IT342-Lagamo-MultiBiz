@@ -30,4 +30,7 @@
 ### Mobile Navigation & Transaction Logs
 - **What was implemented?** Transitioned the Android app to a Modular Navigation Architecture by creating a reusable Bottom Navigation component and centralized routing utility (`BottomNavUtils`). Implemented the Transaction Logs feature, complete with a custom RecyclerView adapter (`LogsAdapter`) to display transaction history, fully integrated with the new modular navigation logic.
 
-**IT342 Phase 2 – Login for Mobile is successfully completed.**
+### Mobile Staff Profile & Account Management
+- **What was implemented?** Designed and implemented the comprehensive Staff Profile screen. Features include a circular identity avatar, real-time assignment monitoring (non-editable with lock indication), and detailed employee attribute tracking. Integrated functional account actions such as a secure Log Out workflow (clearing activity stacks) and persistent navigation state management for the "Profile" tab.
+
+**IT342 Phase 2 – Staff Profile and Log Management for Mobile is successfully completed.**
