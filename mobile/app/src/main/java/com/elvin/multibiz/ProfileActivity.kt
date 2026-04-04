@@ -24,8 +24,8 @@ class ProfileActivity : AppCompatActivity() {
 
         // Implement Change Password Listener
         btnChangePassword.setOnClickListener {
-            // Placeholder for password change feature
-            Toast.makeText(this, "Change Password feature coming soon!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, ChangePasswordActivity::class.java)
+            startActivity(intent)
         }
 
         // Implement Log Out Listener
