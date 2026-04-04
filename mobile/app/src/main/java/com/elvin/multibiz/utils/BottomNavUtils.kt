@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 import com.elvin.multibiz.HomeActivity
 import com.elvin.multibiz.LogsActivity
+import com.elvin.multibiz.ProfileActivity
 import com.elvin.multibiz.R
 
 private const val COLOR_ACTIVE   = "#123458"
@@ -64,7 +65,9 @@ fun setupBottomNav(activity: Activity, navRoot: View, activeTabId: Int) {
     }
 
     tabProfile.setOnClickListener {
-        // Reserved for future ProfileActivity
+        if (activeTabId != R.id.nav_tab_profile) {
+            navigateTo(activity, ProfileActivity::class.java)
+        }
     }
 }
 
@@ -77,7 +80,7 @@ private fun setTabState(icon: ImageView, label: TextView, isActive: Boolean) {
 }
 
 /** Launches a target Activity with no transition animation and clears the back stack. */
-private fun <T : Activity> navigateTo(from: Activity, to: Class<T>) {
+private fun navigateTo(from: Activity, to: Class<*>) {
     val intent = Intent(from, to).apply {
         flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
     }
