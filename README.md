@@ -33,4 +33,7 @@
 ### Mobile Staff Profile & Account Management
 - **What was implemented?** Designed and implemented the comprehensive Staff Profile screen. Features include a circular identity avatar, real-time assignment monitoring (non-editable with lock indication), and detailed employee attribute tracking. Integrated functional account actions such as a secure Log Out workflow (clearing activity stacks) and persistent navigation state management for the "Profile" tab.
 
-**IT342 Phase 2 – Staff Profile and Log Management for Mobile is successfully completed.**
+### Mobile Password Security & Management
+- **What was implemented?** Developed a dedicated "Change Password" sub-screen for staff accounts. Implemented a clean, scrollable form with secured input fields and real-time password visibility toggling. Added a stylized security requirements monitor to guide users on password complexity (8+ characters, numbers, and special characters). Integrated seamless navigation from the Profile tab and built-in form validation logic to ensure data integrity during security updates.
+
+**IT342 Phase 2 – Staff Profile and Password Management for Mobile is successfully completed.**
