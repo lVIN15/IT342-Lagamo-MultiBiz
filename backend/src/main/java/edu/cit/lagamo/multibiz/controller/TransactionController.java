@@ -60,6 +60,45 @@ public class TransactionController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('OWNER')")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> updateTransaction(
+            @PathVariable UUID id,
+            @Valid @RequestBody TransactionRequest request,
+            Authentication authentication) {
+        
+        ApiResponse<Map<String, Object>> response = transactionService.updateTransaction(id, request, authentication.getName());
+        if (!response.isSuccess()) {
+            if ("FORBIDDEN".equals(response.getError().getCode())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            if ("NOT_FOUND".equals(response.getError().getCode())) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('OWNER')")
+    public ResponseEntity<ApiResponse<Void>> deleteTransaction(
+            @PathVariable UUID id,
+            Authentication authentication) {
+        
+        ApiResponse<Void> response = transactionService.deleteTransaction(id, authentication.getName());
+        if (!response.isSuccess()) {
+            if ("FORBIDDEN".equals(response.getError().getCode())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            if ("NOT_FOUND".equals(response.getError().getCode())) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/{id}/upload")
     @PreAuthorize("hasAnyAuthority('STAFF', 'OWNER')")
     public ResponseEntity<ApiResponse<Map<String, Object>>> uploadReceipt(
