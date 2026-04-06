@@ -38,8 +38,8 @@ public class BusinessController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('OWNER')")
-    public ResponseEntity<ApiResponse<List<Business>>> getBusinesses(Authentication authentication) {
-        ApiResponse<List<Business>> response = businessService.getBusinessesByOwner(authentication.getName());
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getBusinesses(Authentication authentication) {
+        ApiResponse<List<Map<String, Object>>> response = businessService.getBusinessesByOwner(authentication.getName());
         if (!response.isSuccess()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
@@ -86,5 +86,15 @@ public class BusinessController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/my-assignments")
+    @PreAuthorize("hasAnyAuthority('STAFF', 'OWNER')")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getMyAssignments(Authentication authentication) {
+        ApiResponse<List<Map<String, Object>>> response = businessService.getAssignedBusinesses(authentication.getName());
+        if (!response.isSuccess()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+        return ResponseEntity.ok(response);
     }
 }

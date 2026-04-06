@@ -2,7 +2,6 @@ package edu.cit.lagamo.multibiz.controller;
 
 import edu.cit.lagamo.multibiz.dto.ApiResponse;
 import edu.cit.lagamo.multibiz.dto.TransactionRequest;
-import edu.cit.lagamo.multibiz.entity.Transaction;
 import edu.cit.lagamo.multibiz.service.TransactionService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -49,11 +48,11 @@ public class TransactionController {
 
     @GetMapping("/business/{businessId}")
     @PreAuthorize("hasAnyAuthority('STAFF', 'OWNER')")
-    public ResponseEntity<ApiResponse<List<Transaction>>> getTransactionsByBusiness(
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getTransactionsByBusiness(
             @PathVariable UUID businessId,
             Authentication authentication) {
 
-        ApiResponse<List<Transaction>> response = transactionService.getTransactionsByBusiness(businessId, authentication.getName());
+        ApiResponse<List<Map<String, Object>>> response = transactionService.getTransactionsByBusiness(businessId, authentication.getName());
 
         if (!response.isSuccess()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
