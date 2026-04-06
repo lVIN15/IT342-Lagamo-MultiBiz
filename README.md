@@ -36,4 +36,7 @@
 ### Mobile Password Security & Management
 - **What was implemented?** Developed a dedicated "Change Password" sub-screen for staff accounts. Implemented a clean, scrollable form with secured input fields and real-time password visibility toggling. Added a stylized security requirements monitor to guide users on password complexity (8+ characters, numbers, and special characters). Integrated seamless navigation from the Profile tab and built-in form validation logic to ensure data integrity during security updates.
 
-**IT342 Phase 2 – Staff Profile and Password Management for Mobile is successfully completed.**
+### Mobile Home Integration & Receipt Management
+- **What was implemented?** Fully integrated the Mobile Home dashboard with the Spring Boot backend. Staff accounts now dynamically fetch their assigned business location via the new `/my-assignments` API. Implemented real-time income submission with persistent JWT session management (`SessionManager`) and a high-performance multipart receipt upload system (Camera & Gallery support) with automated backend synchronization and HikariCP connection pool optimization.
+
+**IT342 Phase 2 – Home Dashboard Backend Integration for Mobile is successfully completed.**
