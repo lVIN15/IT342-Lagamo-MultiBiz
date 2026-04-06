@@ -40,3 +40,16 @@
 - **What was implemented?** Fully integrated the Mobile Home dashboard with the Spring Boot backend. Staff accounts now dynamically fetch their assigned business location via the new `/my-assignments` API. Implemented real-time income submission with persistent JWT session management (`SessionManager`) and a high-performance multipart receipt upload system (Camera & Gallery support) with automated backend synchronization and HikariCP connection pool optimization.
 
 **IT342 Phase 2 – Home Dashboard Backend Integration for Mobile is successfully completed.**
+
+## Phase 3 Progress
+
+### Web Transaction Management & CRUD
+- **What was implemented?** Developed a comprehensive transaction management suite for Business Owners. Implemented secure `PUT` and `DELETE` REST endpoints on the backend with strict ownership authorization checks. On the frontend, created a dynamic dropdown-based Action menu for each transaction, integrated with custom `DashboardEditTxModal` and `DashboardDeleteTxModal` components for authenticated real-time data mutation.
+
+### Real-time Analytics & MoM Growth
+- **What was implemented?** Integrated an advanced analytics engine into the Web Dashboard. Implemented real-time **Month-over-Month (MoM) growth calculations** for Total Revenue, Transaction Volume, and Business Acquisition. Designed a stylized "Growth Visualizer" using status badges and trend indicators (emerald for growth, red for decline) to provide immediate financial insights for owners.
+
+### Backend Standardized Error Handling
+- **What was implemented?** Implemented a `GlobalExceptionHandler` to centralize and standardize the API's response structure. This ensures that all platform exceptions (Authorization, Persistence, or Validation) are gracefully trapped and returned in a consistent `ApiResponse` envelope, improving the reliability and debuggability of the mobile and web integrations.
+
+**IT342 Phase 3 – Web Main Feature Completed**
