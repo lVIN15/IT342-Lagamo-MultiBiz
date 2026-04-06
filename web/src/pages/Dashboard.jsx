@@ -85,6 +85,11 @@ export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // MoM Growth Metrics
+  const [revGrowth, setRevGrowth] = useState(0);
+  const [txnGrowth, setTxnGrowth] = useState(0);
+  const [bizGrowth, setBizGrowth] = useState(0);
+
   // Chart
   const [chartRange, setChartRange] = useState('7d');
 
@@ -118,6 +123,22 @@ export default function Dashboard() {
       if (result.success && result.data) {
         setBusinesses(result.data);
         fetchAllTransactions(result.data, token);
+
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        let currTotalBiz = result.data.length;
+        let createdThisMonth = 0;
+        result.data.forEach(b => {
+          if(!b.createdAt) return;
+          const d = new Date(b.createdAt);
+          if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+            createdThisMonth++;
+          }
+        });
+        const prevTotalBiz = currTotalBiz - createdThisMonth;
+        const bg = prevTotalBiz === 0 ? (currTotalBiz > 0 ? 100 : 0) : ((currTotalBiz - prevTotalBiz) / prevTotalBiz) * 100;
+        setBizGrowth(bg);
       }
     } catch (error) {
       console.error('Failed to fetch businesses:', error);
@@ -137,8 +158,10 @@ export default function Dashboard() {
         if (result.success && result.data) {
           result.data.forEach(tx => {
             allTxns.push({
+              rawId: tx.id,
               id: tx.id ? `#${tx.id.substring(0, 8).toUpperCase()}` : '#TRX',
               business: biz.name,
+              description: tx.description || '',
               date: tx.createdAt
                 ? new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
                 : 'N/A',
@@ -157,6 +180,45 @@ export default function Dashboard() {
       const revenue = allTxns.reduce((sum, tx) => sum + tx.rawAmount, 0);
       setTotalRevenue(revenue);
       setTotalTransactionCount(allTxns.length);
+
+      // --- MoM Calculations ---
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+
+      let previousMonth = currentMonth - 1;
+      let previousYear = currentYear;
+      if (previousMonth < 0) {
+        previousMonth = 11;
+        previousYear = currentYear - 1;
+      }
+
+      let currRev = 0, prevRev = 0;
+      let currTxnCount = 0, prevTxnCount = 0;
+
+      allTxns.forEach(tx => {
+        if (!tx.rawDate) return;
+        const txDate = new Date(tx.rawDate);
+        const m = txDate.getMonth();
+        const y = txDate.getFullYear();
+
+        if (y === currentYear && m === currentMonth) {
+          currRev += tx.rawAmount;
+          currTxnCount++;
+        } else if (y === previousYear && m === previousMonth) {
+          prevRev += tx.rawAmount;
+          prevTxnCount++;
+        }
+      });
+
+      const calcGrowth = (curr, prev) => {
+        if (prev === 0) return curr > 0 ? 100 : 0;
+        return ((curr - prev) / prev) * 100;
+      };
+
+      setRevGrowth(calcGrowth(currRev, prevRev));
+      setTxnGrowth(calcGrowth(currTxnCount, prevTxnCount));
+
     } catch (err) {
       console.error('Failed to fetch transactions:', err);
     }
@@ -183,6 +245,23 @@ export default function Dashboard() {
     if (v >= 1000000) return `${currencySymbol}${(v / 1000000).toFixed(1)}M`;
     if (v >= 1000) return `${currencySymbol}${(v / 1000).toFixed(0)}k`;
     return `${currencySymbol}${v}`;
+  };
+
+  // Helper for MoM Visualizer
+  const renderGrowthBadge = (percentage) => {
+    const isPositive = percentage >= 0;
+    const color = isPositive ? 'text-emerald-700' : 'text-red-700';
+    const bg = isPositive ? 'bg-emerald-100' : 'bg-red-100';
+    const arrow = isPositive 
+      ? <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+      : <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"></path></svg>;
+      
+    return (
+      <div className={`${bg} ${color} text-xs font-bold px-2 py-1 rounded-md flex items-center`}>
+        {arrow}
+        {isPositive ? '+' : ''}{percentage.toFixed(1)}%
+      </div>
+    );
   };
 
   return (
@@ -230,13 +309,10 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 w-full">
               <div className="flex justify-between items-start">
-                <div className="bg-[#123458] bg-opacity-10 p-3 rounded-lg text-[#123458]">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                <div className="bg-emerald-50 p-3 rounded-lg text-emerald-600">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
-                <div className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded-md flex items-center">
-                  <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                  +12%
-                </div>
+                {renderGrowthBadge(revGrowth)}
               </div>
               <div className="mt-4">
                 <p className="text-gray-500 font-medium text-sm">Total Revenue</p>
@@ -246,13 +322,10 @@ export default function Dashboard() {
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 w-full">
               <div className="flex justify-between items-start">
-                <div className="bg-[#123458] bg-opacity-10 p-3 rounded-lg text-[#123458]">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <div className="bg-amber-50 p-3 rounded-lg text-amber-600">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                 </div>
-                <div className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded-md flex items-center">
-                  <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                  +5%
-                </div>
+                {renderGrowthBadge(txnGrowth)}
               </div>
               <div className="mt-4">
                 <p className="text-gray-500 font-medium text-sm">Transactions</p>
@@ -262,16 +335,13 @@ export default function Dashboard() {
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 w-full">
               <div className="flex justify-between items-start">
-                <div className="bg-[#123458] bg-opacity-10 p-3 rounded-lg text-[#123458]">
+                <div className="bg-blue-50 p-3 rounded-lg text-blue-600">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                 </div>
-                <div className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded-md flex items-center">
-                  <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                  +2%
-                </div>
+                {renderGrowthBadge(bizGrowth)}
               </div>
               <div className="mt-4">
-                <p className="text-gray-500 font-medium text-sm">Active Businesses</p>
+                <p className="text-gray-500 font-medium text-sm">Total Businesses</p>
                 <h2 className="text-3xl font-bold text-[#123458] mt-1">{businesses.length}</h2>
               </div>
             </div>
@@ -342,7 +412,7 @@ export default function Dashboard() {
                       <th className="pb-3 px-4">Business</th>
                       <th className="pb-3 px-4">Date</th>
                       <th className="pb-3 px-4">Amount</th>
-                      <th className="pb-3 pl-4 text-right">Action</th>
+                      <th className="pb-3 px-4">Receipt</th>
                     </tr>
                   </thead>
                   <tbody className="text-gray-600 font-medium">
@@ -364,7 +434,7 @@ export default function Dashboard() {
                         <td className="py-4 px-4 font-bold text-[#123458]">
                           {currencySymbol}{convertAmount(row.rawAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </td>
-                        <td className="py-4 pl-4 text-right">
+                        <td className="py-4 px-4">
                           {row.receiptUrl ? (
                             <a
                               href={row.receiptUrl}
