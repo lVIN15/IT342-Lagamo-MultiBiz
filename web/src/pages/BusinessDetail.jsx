@@ -5,6 +5,8 @@ import Sidebar from '../components/Sidebar';
 import AddStaffModal from '../components/AddStaffModal';
 import LogIncomeModal from '../components/LogIncomeModal';
 import EditBusinessModal from '../components/EditBusinessModal';
+import DashboardEditTxModal from '../components/DashboardEditTxModal';
+import DashboardDeleteTxModal from '../components/DashboardDeleteTxModal';
 
 /* ── Process Chart Data (Matches Dashboard logic) ───────────────────────── */
 function aggregateByRange(allTxns, range) {
@@ -100,6 +102,9 @@ export default function BusinessDetail() {
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [staffToRemove, setStaffToRemove] = useState(null);
   const [isRemoving, setIsRemoving] = useState(false);
+  const [openDropdownId, setOpenDropdownId] = useState(null);
+  const [editModalTx, setEditModalTx] = useState(null);
+  const [deleteModalTx, setDeleteModalTx] = useState(null);
 
   // Custom Toast State
   const [toastMsg, setToastMsg] = useState('');
@@ -155,7 +160,8 @@ export default function BusinessDetail() {
       const result = await response.json();
       if (result.success && result.data) {
         setIncomeLogs(result.data.map(tx => ({
-          id: tx.id,
+          rawId: tx.id,
+          id: tx.id ? `#${tx.id.substring(0, 8).toUpperCase()}` : '#TRX',
           date: tx.createdAt ? new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A',
           rawDate: tx.createdAt || '',
           description: tx.description || 'No description',
@@ -164,6 +170,8 @@ export default function BusinessDetail() {
           rawAmount: parseFloat(tx.amount) || 0,
           receipt: !!tx.receiptUrl,
           receiptUrl: tx.receiptUrl || null,
+          business: business?.name || 'Unknown',
+          businessId: businessId
         })));
       }
     } catch (err) {
@@ -225,6 +233,38 @@ export default function BusinessDetail() {
   // Compute total revenue from real transactions
   const totalRevenue = incomeLogs.reduce((sum, log) => sum + log.amount, 0);
   const displayRevenue = convertAmount(totalRevenue);
+
+  // Compute MoM Growth natively for this specific business
+  const revGrowth = useMemo(() => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    let previousMonth = currentMonth - 1;
+    let previousYear = currentYear;
+    if (previousMonth < 0) {
+      previousMonth = 11;
+      previousYear = currentYear - 1;
+    }
+
+    let currRev = 0, prevRev = 0;
+
+    incomeLogs.forEach(tx => {
+      if (!tx.rawDate) return;
+      const txDate = new Date(tx.rawDate);
+      const m = txDate.getMonth();
+      const y = txDate.getFullYear();
+
+      if (y === currentYear && m === currentMonth) {
+        currRev += tx.amount;
+      } else if (y === previousYear && m === previousMonth) {
+        prevRev += tx.amount;
+      }
+    });
+
+    if (prevRev === 0) return currRev > 0 ? 100 : 0;
+    return ((currRev - prevRev) / prevRev) * 100;
+  }, [incomeLogs]);
 
   // Compute chart data with zero-filling and currency conversion map
   const activeChartData = useMemo(() => {
@@ -342,12 +382,23 @@ export default function BusinessDetail() {
             {/* Revenue Summary Card */}
             <div className="bg-white rounded-xl border border-gray-100 p-6">
               <p className="text-sm text-gray-500 font-medium">Total Revenue</p>
-              <p className="text-3xl font-bold text-emerald-600 mt-1">{currencySymbol}{displayRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+              <p className="text-3xl font-bold text-[#123458] mt-1">{currencySymbol}{displayRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
               <div className="flex items-center gap-1 mt-2">
-                <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-                <span className="text-sm font-semibold text-emerald-600">+12% from last month</span>
+                {revGrowth >= 0 ? (
+                  <>
+                    <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                    <span className="text-sm font-semibold text-emerald-600">+{revGrowth.toFixed(1)}% this month</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" />
+                    </svg>
+                    <span className="text-sm font-semibold text-red-600">{revGrowth.toFixed(1)}% this month</span>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -481,12 +532,13 @@ export default function BusinessDetail() {
                     <th className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-6 py-3">Logged By</th>
                     <th className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-6 py-3">Amount</th>
                     <th className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-6 py-3">Receipt</th>
+                    <th className="text-center text-xs font-semibold text-gray-400 uppercase tracking-wider px-6 py-3">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {incomeLogs.length === 0 ? (
                     <tr>
-                      <td colSpan="5" className="px-6 py-8 text-center text-sm text-gray-400">No income logged yet.</td>
+                      <td colSpan="6" className="px-6 py-8 text-center text-sm text-gray-400">No income logged yet.</td>
                     </tr>
                   ) : (
                     incomeLogs.map(log => (
@@ -513,6 +565,36 @@ export default function BusinessDetail() {
                           ) : (
                             <span className="text-xs text-gray-400">—</span>
                           )}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <div className="relative inline-block text-left">
+                            <button 
+                              onClick={() => setOpenDropdownId(openDropdownId === log.rawId ? null : log.rawId)}
+                              className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+                            </button>
+                            {openDropdownId === log.rawId && (
+                              <div className="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg border border-gray-100 ring-1 ring-black ring-opacity-5 z-20 overflow-hidden">
+                                <div className="py-1">
+                                  <button
+                                    onClick={() => { setEditModalTx(log); setOpenDropdownId(null); }}
+                                    className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+                                  >
+                                    <svg className="mr-2 h-4 w-4 text-gray-400 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                    Edit
+                                  </button>
+                                  <button
+                                    onClick={() => { setDeleteModalTx(log); setOpenDropdownId(null); }}
+                                    className="group flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                  >
+                                    <svg className="mr-2 h-4 w-4 text-red-400 group-hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    Delete
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -600,6 +682,20 @@ export default function BusinessDetail() {
           </div>
         </div>
       )}
+
+      <DashboardEditTxModal
+        isOpen={!!editModalTx}
+        onClose={() => setEditModalTx(null)}
+        transaction={editModalTx ? { ...editModalTx, business: business?.name || 'Unknown' } : null}
+        onSuccess={() => fetchTransactions()}
+      />
+
+      <DashboardDeleteTxModal
+        isOpen={!!deleteModalTx}
+        onClose={() => setDeleteModalTx(null)}
+        transaction={deleteModalTx ? { ...deleteModalTx, business: business?.name || 'Unknown' } : null}
+        onSuccess={() => fetchTransactions()}
+      />
 
       {/* ── Custom Cyan Success Toast ─────────────────────────── */}
       {toastMsg && (
