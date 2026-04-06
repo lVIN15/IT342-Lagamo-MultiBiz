@@ -78,7 +78,8 @@ public class TransactionService {
         return ApiResponse.ok(data);
     }
 
-    public ApiResponse<List<Transaction>> getTransactionsByBusiness(UUID businessId, String userEmail) {
+    @Transactional(readOnly = true)
+    public ApiResponse<List<Map<String, Object>>> getTransactionsByBusiness(UUID businessId, String userEmail) {
         User user = userRepository.findByEmail(userEmail).orElse(null);
         if (user == null) {
             return ApiResponse.fail("UNAUTHORIZED", "User not found");
@@ -94,7 +95,25 @@ public class TransactionService {
         }
 
         List<Transaction> transactions = transactionRepository.findByBusinessId(businessId);
-        return ApiResponse.ok(transactions);
+        List<Map<String, Object>> result = transactions.stream().map(tx -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", tx.getId().toString());
+            map.put("amount", tx.getAmount());
+            map.put("description", tx.getDescription());
+            map.put("status", tx.getStatus());
+            map.put("receiptUrl", tx.getReceiptUrl());
+            map.put("createdAt", tx.getCreatedAt().toString());
+            
+            if (tx.getStaff() != null) {
+                Map<String, Object> staffMap = new HashMap<>();
+                staffMap.put("firstname", tx.getStaff().getFirstname());
+                staffMap.put("lastname", tx.getStaff().getLastname());
+                map.put("staff", staffMap);
+            }
+            return map;
+        }).toList();
+
+        return ApiResponse.ok(result);
     }
 
     @Transactional
