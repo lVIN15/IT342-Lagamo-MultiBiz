@@ -2,7 +2,6 @@ package com.elvin.multibiz
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -12,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.toColorInt
 import androidx.lifecycle.lifecycleScope
+import com.elvin.multibiz.utils.SessionManager
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
@@ -28,6 +28,14 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // If already logged in, skip straight to Home
+        if (SessionManager.isLoggedIn(this)) {
+            startActivity(Intent(this, HomeActivity::class.java))
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_login)
 
         etEmail = findViewById(R.id.etEmail)
@@ -60,7 +68,21 @@ class LoginActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val body = response.body()
                     if (body?.success == true && body.data != null) {
-                        showCustomToast("Welcome back, ${body.data.user.firstname}!", true)
+
+                        // ── Persist tokens & user data to SessionManager ──
+                        val data = body.data
+                        SessionManager.saveSession(
+                            context      = this@LoginActivity,
+                            accessToken  = data.accessToken,
+                            refreshToken = data.refreshToken,
+                            userId       = data.user.id,
+                            email        = data.user.email,
+                            firstname    = data.user.firstname,
+                            lastname     = data.user.lastname,
+                            role         = data.user.role
+                        )
+
+                        showCustomToast("Welcome back, ${data.user.firstname}!", true)
                         // Wait for 1.5 seconds so the user can see the success popup
                         delay(1500)
                         val intent = Intent(this@LoginActivity, HomeActivity::class.java)

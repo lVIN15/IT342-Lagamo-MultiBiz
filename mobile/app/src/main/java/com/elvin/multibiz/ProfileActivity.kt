@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.elvin.multibiz.utils.SessionManager
 import com.elvin.multibiz.utils.setupBottomNav
 import com.google.android.material.button.MaterialButton
 
@@ -39,6 +40,9 @@ class ProfileActivity : AppCompatActivity() {
      * It clears the activity stack to prevent the user from going back to the profile.
      */
     private fun performLogout() {
+        // Clear JWT tokens and user data from SharedPreferences
+        SessionManager.clearSession(this)
+
         Toast.makeText(this, "Logging out...", Toast.LENGTH_SHORT).show()
 
         val intent = Intent(this, LoginActivity::class.java)
@@ -48,3 +52,4 @@ class ProfileActivity : AppCompatActivity() {
         finish()
     }
 }
+
