@@ -19,7 +19,6 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="#123458"
-            app:navigationIcon="@android:drawable/ic_menu_revert"
             app:navigationIconTint="#FFFFFF">
 
             <TextView
