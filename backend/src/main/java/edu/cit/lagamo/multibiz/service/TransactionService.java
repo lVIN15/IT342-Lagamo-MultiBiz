@@ -117,6 +117,55 @@ public class TransactionService {
     }
 
     @Transactional
+    public ApiResponse<Map<String, Object>> updateTransaction(UUID transactionId, TransactionRequest request, String userEmail) {
+        User user = userRepository.findByEmail(userEmail).orElse(null);
+        if (user == null) {
+            return ApiResponse.fail("UNAUTHORIZED", "User not found");
+        }
+
+        Transaction tx = transactionRepository.findById(transactionId).orElse(null);
+        if (tx == null) {
+            return ApiResponse.fail("NOT_FOUND", "Transaction not found");
+        }
+
+        // STRICT OWNER CHECK: Only the business owner can edit
+        if (!tx.getBusiness().getOwner().getId().equals(user.getId())) {
+            return ApiResponse.fail("FORBIDDEN", "Only the business owner can explicitly edit transactions.");
+        }
+
+        tx.setAmount(request.getAmount());
+        tx.setDescription(request.getDescription());
+        transactionRepository.save(tx);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("transactionId", tx.getId().toString());
+        data.put("status", tx.getStatus());
+
+        return ApiResponse.ok(data);
+    }
+
+    @Transactional
+    public ApiResponse<Void> deleteTransaction(UUID transactionId, String userEmail) {
+        User user = userRepository.findByEmail(userEmail).orElse(null);
+        if (user == null) {
+            return ApiResponse.fail("UNAUTHORIZED", "User not found");
+        }
+
+        Transaction tx = transactionRepository.findById(transactionId).orElse(null);
+        if (tx == null) {
+            return ApiResponse.fail("NOT_FOUND", "Transaction not found");
+        }
+
+        // STRICT OWNER CHECK: Only the business owner can delete
+        if (!tx.getBusiness().getOwner().getId().equals(user.getId())) {
+            return ApiResponse.fail("FORBIDDEN", "Only the business owner can delete transactions.");
+        }
+
+        transactionRepository.delete(tx);
+        return ApiResponse.ok(null);
+    }
+
+    @Transactional
     public ApiResponse<Map<String, Object>> uploadReceipt(UUID transactionId, MultipartFile file, String userEmail) {
         User user = userRepository.findByEmail(userEmail).orElse(null);
         if (user == null) {
