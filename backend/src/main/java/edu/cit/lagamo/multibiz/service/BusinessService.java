@@ -50,13 +50,40 @@ public class BusinessService {
         return ApiResponse.ok(saved);
     }
 
-    public ApiResponse<List<Business>> getBusinessesByOwner(String ownerEmail) {
+    @Transactional(readOnly = true)
+    public ApiResponse<List<Map<String, Object>>> getBusinessesByOwner(String ownerEmail) {
         User owner = userRepository.findByEmail(ownerEmail).orElse(null);
         if (owner == null) {
             return ApiResponse.fail("NOT_FOUND", "Owner not found");
         }
+        
         List<Business> businesses = businessRepository.findByOwnerId(owner.getId());
-        return ApiResponse.ok(businesses);
+        List<Map<String, Object>> result = businesses.stream().map(b -> {
+            Map<String, Object> map = new java.util.LinkedHashMap<>();
+            map.put("id", b.getId().toString());
+            map.put("name", b.getName());
+            map.put("category", b.getCategory());
+            map.put("description", b.getDescription());
+            map.put("createdAt", b.getCreatedAt().toString());
+            
+            // Map Lazy business staff safely for frontend use
+            List<Map<String, Object>> staffList = b.getBusinessStaff().stream().map(bs -> {
+                Map<String, Object> sMap = new java.util.LinkedHashMap<>();
+                sMap.put("id", bs.getUser().getId().toString());
+                String first = bs.getUser().getFirstname() != null ? bs.getUser().getFirstname() : "";
+                String last = bs.getUser().getLastname() != null ? bs.getUser().getLastname() : "";
+                sMap.put("name", (first + " " + last).trim());
+                sMap.put("initials", (!first.isEmpty() ? first.substring(0, 1) : "") + (!last.isEmpty() ? last.substring(0, 1) : ""));
+                sMap.put("email", bs.getUser().getEmail());
+                sMap.put("dateAssigned", bs.getAssignedAt().toString());
+                return sMap;
+            }).toList();
+            
+            map.put("staff", staffList);
+            return map;
+        }).toList();
+
+        return ApiResponse.ok(result);
     }
 
     @Transactional
@@ -99,6 +126,29 @@ public class BusinessService {
 
         businessRepository.delete(business);
         return ApiResponse.ok(null);
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<List<Map<String, Object>>> getAssignedBusinesses(String userEmail) {
+        User user = userRepository.findByEmail(userEmail).orElse(null);
+        if (user == null) {
+            return ApiResponse.fail("NOT_FOUND", "User not found");
+        }
+
+        List<BusinessStaff> assignments = businessStaffRepository.findByUserId(user.getId());
+        List<Map<String, Object>> businesses = assignments.stream()
+                .map(BusinessStaff::getBusiness)
+                .map(b -> {
+                    Map<String, Object> map = new java.util.LinkedHashMap<>();
+                    map.put("id", b.getId().toString());
+                    map.put("name", b.getName());
+                    map.put("category", b.getCategory());
+                    map.put("description", b.getDescription());
+                    return map;
+                })
+                .toList();
+
+        return ApiResponse.ok(businesses);
     }
 
     @Transactional
