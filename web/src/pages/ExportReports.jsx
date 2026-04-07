@@ -1,9 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
+import { exportStrategies } from '../services/export';
 
 const QUICK_FILTERS = ['This Month', 'Last Quarter', 'Year to Date'];
 
 
+
+// ── Helper: user-scoped localStorage key for export history ─────────
+function getUserExportsKey() {
+  try {
+    const user = JSON.parse(localStorage.getItem('user'));
+    return user?.id ? `recentExports_${user.id}` : 'recentExports';
+  } catch {
+    return 'recentExports';
+  }
+}
 
 export default function ExportReports() {
   const [businesses, setBusinesses] = useState([]);
@@ -18,7 +29,7 @@ export default function ExportReports() {
 
   useEffect(() => {
     fetchBusinesses();
-    const savedLog = localStorage.getItem('recentExports');
+    const savedLog = localStorage.getItem(getUserExportsKey());
     if (savedLog) {
       setRecentExports(JSON.parse(savedLog));
     }
@@ -63,115 +74,72 @@ export default function ExportReports() {
     }
   };
 
-  const generateCSVReport = async (businessIdTarget) => {
-    setCsvLoading(true);
+  // ── STRATEGY PATTERN: Unified export handler ──────────────────────────
+  // Each strategy owns its own data needs (CSV fetches data, Email doesn't).
+  // The component only passes context and handles the result.
+  const handleExport = async (type) => {
+    const setLoading = type === 'csv' ? setCsvLoading : setEmailLoading;
+    setLoading(true);
+
     try {
-      const token = localStorage.getItem('token');
-      if (!token) throw new Error("Authentication required.");
-      
-      let allTxns = [];
-      
-      // Handle the global 'All Businesses' option robustly
-      if (businessIdTarget === 'all') {
-         const results = await Promise.allSettled(
-           businesses.map(b => fetch(`http://localhost:8080/api/v1/transactions/business/${b.id}`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()))
-         );
-         results.forEach(res => {
-            if (res.status === 'fulfilled' && res.value?.success && res.value?.data) {
-               allTxns.push(...res.value.data);
-            }
-         });
-      } else {
-         const res = await fetch(`http://localhost:8080/api/v1/transactions/business/${businessIdTarget}`, {
-           headers: { Authorization: `Bearer ${token}` }
-         });
-         const result = await res.json();
-         if (!result.success) throw new Error(result.error?.message || 'Failed to fetch dynamically');
-         allTxns = result.data || [];
-      }
-      
-      // 1. Array Filter by Date Sequence
-      let filteredTxns = [...allTxns];
-      if (startDate && endDate) {
-        const start = new Date(startDate).getTime();
-        const end = new Date(endDate).getTime() + 86400000; // include end of day
-        filteredTxns = filteredTxns.filter(tx => {
-          const t = new Date(tx.createdAt).getTime();
-          return t >= start && t <= end;
-        });
-      }
-      
-      if (filteredTxns.length === 0) {
-        setToastMsg('No transactions found in this time frame.');
-        setTimeout(() => setToastMsg(''), 3000);
+      // 1. Resolve human-readable business name for the export log
+      const bizNameObj = businesses.find(b => b.id === selectedBusiness);
+      const businessName = selectedBusiness === 'all'
+        ? 'All Businesses'
+        : (bizNameObj?.name || 'Unknown Business');
+
+      // 2. Delegate to the appropriate strategy — each strategy
+      //    handles its own data-fetching internally if needed.
+      const strategy = exportStrategies[type];
+      const result = await strategy.execute({
+        businessId: selectedBusiness,
+        businessName,
+        businesses,
+        startDate,
+        endDate,
+      });
+
+      // 3. Handle the result
+      if (!result.success) {
+        showToast(result.error || 'Export failed.');
         return;
       }
-      
-      // JSON to CSV parsing
-      const headers = ['Transaction ID', 'Date', 'Description', 'Amount'];
-      const rows = filteredTxns.map(tx => {
-        const id = tx.id ? tx.id.substring(0, 8).toUpperCase() : 'TRX';
-        const date = tx.createdAt ? new Date(tx.createdAt).toLocaleDateString() : 'N/A';
-        const desc = `"${(tx.description || '').replace(/"/g, '""')}"`;
-        const amt = parseFloat(tx.amount) || 0;
-        return `${id},${date},${desc},${amt}`;
-      });
-      
-      const csvString = [headers.join(','), ...rows].join('\n');
-      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-      
-      // Synthetic Browser Download Trigger
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      const fileName = `business_${businessIdTarget}_report.csv`;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      // 2. Log History to UI & LocalStorage
-      const bizNameObj = businesses.find(b => b.id === businessIdTarget);
-      const bizNameFormated = businessIdTarget === 'all' ? 'All Businesses' : (bizNameObj?.name || 'Unknown Business');
-      
-      const newExportLog = {
+
+      // 4. Log to export history (user-scoped)
+      const exportLog = {
         id: Date.now(),
-        filename: fileName,
-        date: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }),
-        type: 'CSV Export',
-        business: bizNameFormated,
+        filename: result.fileName || `${type}_report`,
+        date: new Date().toLocaleString('en-US', {
+          month: 'short', day: 'numeric', year: 'numeric',
+          hour: 'numeric', minute: '2-digit',
+        }),
+        type: type === 'csv' ? 'CSV Export' : 'Email Report',
+        business: businessName,
         status: 'Completed',
         statusColor: 'emerald',
-        action: 'download'
+        action: type === 'csv' ? 'download' : 'resend',
       };
-      
-      const updatedExports = [newExportLog, ...recentExports].slice(0, 10);
+
+      const updatedExports = [exportLog, ...recentExports].slice(0, 10);
       setRecentExports(updatedExports);
-      localStorage.setItem('recentExports', JSON.stringify(updatedExports));
-      
-      setToastMsg('CSV Generated & Downloaded Successfully!');
-      setTimeout(() => setToastMsg(''), 3000);
-      
+      localStorage.setItem(getUserExportsKey(), JSON.stringify(updatedExports));
+
+      showToast(
+        type === 'csv'
+          ? 'CSV Generated & Downloaded Successfully!'
+          : 'PDF Report Emailed Successfully!'
+      );
+
     } catch (err) {
-      setToastMsg(`Export failed: ${err.message}`);
-      setTimeout(() => setToastMsg(''), 3000);
+      showToast(`Export failed: ${err.message}`);
     } finally {
-      setCsvLoading(false);
+      setLoading(false);
     }
   };
 
-  const handleExport = (type) => {
-    if (type === 'csv') {
-      generateCSVReport(selectedBusiness);
-    } else {
-      setEmailLoading(true);
-      setTimeout(() => {
-        setEmailLoading(false);
-        setToastMsg('PDF Report Emailed Successfully!');
-        setTimeout(() => setToastMsg(''), 3000);
-      }, 2000);
-    }
+  const showToast = (msg) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(''), 3000);
   };
 
   return (
@@ -369,8 +337,7 @@ export default function ExportReports() {
                         {exp.action === 'download' && (
                           <button 
                             onClick={() => {
-                              setToastMsg('Re-downloading is not supported for cached states. Generate a new report.');
-                              setTimeout(() => setToastMsg(''), 3000);
+                              showToast('Re-downloading is not supported for cached states. Generate a new report.');
                             }}
                             className="text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors flex items-center gap-1 cursor-not-allowed"
                           >
