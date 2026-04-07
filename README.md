@@ -51,5 +51,7 @@
 
 ### Backend Standardized Error Handling
 - **What was implemented?** Implemented a `GlobalExceptionHandler` to centralize and standardize the API's response structure. This ensures that all platform exceptions (Authorization, Persistence, or Validation) are gracefully trapped and returned in a consistent `ApiResponse` envelope, improving the reliability and debuggability of the mobile and web integrations.
-
 **IT342 Phase 3 – Web Main Feature Completed**
+
+### Design Patterns Implemented
+* **Strategy Pattern (Export System)**: The `ExportReports.jsx` component delegates report generation to dedicated strategy classes (`CSVExportStrategy`, `EmailExportStrategy`) located in `web/src/services/export/`. This encapsulates specific export algorithms, removing complex conditional logic from the UI and adhering to the Open/Closed Principle for future export formats.
