@@ -81,7 +81,13 @@ export default function Register() {
       localStorage.setItem('token',  payload.accessToken)
       localStorage.setItem('refreshToken', payload.refreshToken)
       localStorage.setItem('role',         payload.user.role)
-      setSuccess(`Account synced! Redirecting…`)
+      
+      if (payload.isNewUser) {
+        setSuccess(`Account created successfully! Redirecting…`)
+      } else {
+        setSuccess(`Welcome back! Redirecting…`)
+      }
+      
       setTimeout(() => navigate('/dashboard'), 1200)
     } catch (err) {
       setError(err.response?.data?.error?.message ?? 'Google signup failed. Please try again.')

@@ -58,10 +58,12 @@ public class AuthService {
 
                 Optional<User> userOpt = userRepository.findByEmail(email);
                 User user;
+                boolean isNewUser = false;
 
                 if (userOpt.isPresent()) {
                     user = userOpt.get();
                 } else {
+                    isNewUser = true;
                     user = new User();
                     user.setEmail(email);
                     user.setFirstname(givenName != null ? givenName : "Google");
@@ -94,6 +96,7 @@ public class AuthService {
                 data.put("user", userMap);
                 data.put("accessToken", accessToken);
                 data.put("refreshToken", refreshToken);
+                data.put("isNewUser", isNewUser);
 
                 return data;
             } else {
