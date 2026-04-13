@@ -56,6 +56,9 @@ public class User {
     @Column(name = "is_active", nullable = false, columnDefinition = "boolean default true")
     private boolean isActive = true;
 
+    @Column(name = "profile_picture_url")
+    private String profilePictureUrl;
+
     // ── Constructors ─────────────────────────────────────────────────────────
 
     public User() {
@@ -69,6 +72,14 @@ public class User {
 
     public void setActive(boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public String getProfilePictureUrl() {
+        return profilePictureUrl;
+    }
+
+    public void setProfilePictureUrl(String profilePictureUrl) {
+        this.profilePictureUrl = profilePictureUrl;
     }
 
     public UUID getId() {

@@ -73,6 +73,42 @@ data class AssignedBusiness(
     val description: String?
 )
 
+// ── Transaction Log (for Logs page) ─────────────────────────────────────────
+
+data class TransactionStaff(
+    val id: String,
+    val firstname: String?,
+    val lastname: String?
+)
+
+data class TransactionLog(
+    val id: String,
+    val amount: Double,
+    val description: String?,
+    val status: String?,
+    val receiptUrl: String?,
+    val createdAt: String,
+    val staff: TransactionStaff?
+)
+
+// ── User Profile ───────────────────────────────────────────────────
+
+data class UserProfile(
+    val id: String,
+    val firstname: String?,
+    val lastname: String?,
+    val email: String,
+    val role: String,
+    val createdAt: String,
+    val assignedBusiness: String?,
+    val profilePictureUrl: String?
+)
+
+data class ChangePasswordRequest(
+    val currentPassword: String,
+    val newPassword: String
+)
+
 // ═══════════════════════════════════════════════════════════════════════════
 // 2. API INTERFACE
 // ═══════════════════════════════════════════════════════════════════════════
@@ -93,6 +129,30 @@ interface MultiBizApi {
     suspend fun getMyAssignments(
         @Header("Authorization") auth: String
     ): retrofit2.Response<ApiResponse<List<AssignedBusiness>>>
+
+    @GET("api/v1/users/me")
+    suspend fun getUserProfile(
+        @Header("Authorization") auth: String
+    ): retrofit2.Response<ApiResponse<UserProfile>>
+
+    @Multipart
+    @POST("api/v1/users/me/profile-picture")
+    suspend fun uploadProfilePicture(
+        @Header("Authorization") auth: String,
+        @Part file: okhttp3.MultipartBody.Part
+    ): retrofit2.Response<ApiResponse<Map<String, String>>>
+
+    @PUT("api/v1/users/me/password")
+    suspend fun changePassword(
+        @Header("Authorization") auth: String,
+        @Body request: ChangePasswordRequest
+    ): retrofit2.Response<ApiResponse<Void>>
+
+    @GET("api/v1/transactions/business/{businessId}")
+    suspend fun getTransactionsByBusiness(
+        @Header("Authorization") auth: String,
+        @Path("businessId") businessId: String
+    ): retrofit2.Response<ApiResponse<List<TransactionLog>>>
 
     // ── Transactions ─────────────────────────────────────────────────────────
 

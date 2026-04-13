@@ -106,6 +106,7 @@ public class TransactionService {
             
             if (tx.getStaff() != null) {
                 Map<String, Object> staffMap = new HashMap<>();
+                staffMap.put("id", tx.getStaff().getId().toString());
                 staffMap.put("firstname", tx.getStaff().getFirstname());
                 staffMap.put("lastname", tx.getStaff().getLastname());
                 map.put("staff", staffMap);
