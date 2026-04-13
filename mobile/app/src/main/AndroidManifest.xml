@@ -40,6 +40,9 @@
         <activity
             android:name=".ChangePasswordActivity"
             android:exported="false" />
+        <activity
+            android:name=".LogDetailsActivity"
+            android:exported="false" />
 
         <!-- FileProvider for camera image capture -->
         <provider

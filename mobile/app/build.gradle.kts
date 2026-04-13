@@ -53,4 +53,8 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
+
+    // Image Loading
+    implementation("io.coil-kt:coil:2.6.0")
+    implementation("com.github.chrisbanes:PhotoView:2.3.0")
 }
