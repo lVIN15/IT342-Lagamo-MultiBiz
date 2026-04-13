@@ -19,28 +19,41 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/textBusinessName"
+            android:id="@+id/textDescription"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textColor="#333333"
             android:textSize="16sp"
             android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"
             app:layout_constraintEnd_toStartOf="@+id/textIncomeAmount"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Speedy Carwash" />
+            tools:text="Daily Income from Sales" />
 
         <TextView
-            android:id="@+id/textTime"
-            android:layout_width="0dp"
+            android:id="@+id/textDate"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:textColor="#888888"
             android:textSize="12sp"
-            app:layout_constraintEnd_toStartOf="@+id/textIncomeAmount"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textBusinessName"
-            tools:text="10:30 AM" />
+            app:layout_constraintTop_toBottomOf="@+id/textDescription"
+            tools:text="Oct 24, 2023" />
+
+        <TextView
+            android:id="@+id/textTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="#888888"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@+id/textDate"
+            app:layout_constraintStart_toEndOf="@+id/textDate"
+            app:layout_constraintTop_toTopOf="@+id/textDate"
+            tools:text="• 10:30 AM" />
 
         <TextView
             android:id="@+id/textIncomeAmount"
@@ -50,9 +63,9 @@
             android:textColor="#4CAF50"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/textTime"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textBusinessName"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="+ ₱1,200.00" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
