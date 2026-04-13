@@ -55,3 +55,6 @@
 
 ### Design Patterns Implemented
 * **Strategy Pattern (Export System)**: The `ExportReports.jsx` component delegates report generation to dedicated strategy classes (`CSVExportStrategy`, `EmailExportStrategy`) located in `web/src/services/export/`. This encapsulates specific export algorithms, removing complex conditional logic from the UI and adhering to the Open/Closed Principle for future export formats.
+
+### Mobile Application Deep Integrations
+- **What was implemented?** Finalized the Epic integration bridging the Mobile UI to the Spring Boot Backend. Activated the **Log Details** viewer to dynamically fetch historical transactions and render receipt images with an interactive pinch-to-zoom interface. Bound the **Staff Profile** view to live Spring Security user endpoints. Re-engineered the **Change Password** architecture with fortified backend validation (`BCrypt`), live real-time UI password rule validations, and button-locking safeguards to entirely prevent duplicate request flooding.
