@@ -1,7 +1,10 @@
 package edu.cit.lagamo.multibiz.service;
 
+import jakarta.mail.internet.MimeMessage;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
@@ -57,6 +60,39 @@ public class EmailService {
         } catch (Exception e) {
             logger.error("Failed to send staff assignment notification to: {}", toEmail, e);
             // Fault tolerance: We log but do NOT throw so the DB/UI mapping doesn't fail
+        }
+    }
+
+    /**
+     * Sends an email with a CSV file attached.
+     * Used by the Export & Reports feature to deliver transaction data
+     * directly to the owner's registered email address.
+     *
+     * @param toEmail   Recipient email address
+     * @param subject   Email subject line
+     * @param body      Plain-text email body
+     * @param csvContent The CSV string to attach
+     * @param filename  The attachment filename (e.g. "report.csv")
+     */
+    public void sendEmailWithCsvAttachment(String toEmail, String subject, String body,
+                                           String csvContent, String filename) {
+        try {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+            helper.setText(body);
+
+            // Attach the CSV as a byte array resource
+            byte[] csvBytes = csvContent.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            helper.addAttachment(filename, new ByteArrayResource(csvBytes), "text/csv");
+
+            javaMailSender.send(mimeMessage);
+            logger.info("CSV report email successfully dispatched to: {}", toEmail);
+        } catch (Exception e) {
+            logger.error("Failed to send CSV report email to: {}", toEmail, e);
+            throw new RuntimeException("Failed to send report email: " + e.getMessage(), e);
         }
     }
 }
