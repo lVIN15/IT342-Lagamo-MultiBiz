@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import Sidebar from '../components/Sidebar';
 import BusinessCard from '../components/BusinessCard';
@@ -84,6 +84,8 @@ export default function Dashboard() {
   const [totalTransactionCount, setTotalTransactionCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const pollingRef = useRef(null);
 
   // MoM Growth Metrics
   const [revGrowth, setRevGrowth] = useState(0);
@@ -108,12 +110,9 @@ export default function Dashboard() {
   }, []);
 
   // ── Fetch businesses + transactions ──────────────────────────────────
-  useEffect(() => {
-    fetchBusinesses();
-  }, []);
-
-  const fetchBusinesses = async () => {
+  const fetchBusinesses = useCallback(async (silent = false) => {
     try {
+      if (!silent) setLoading(true);
       const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:8080/api/v1/businesses', {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -140,12 +139,27 @@ export default function Dashboard() {
         const bg = prevTotalBiz === 0 ? (currTotalBiz > 0 ? 100 : 0) : ((currTotalBiz - prevTotalBiz) / prevTotalBiz) * 100;
         setBizGrowth(bg);
       }
+      setLastUpdated(new Date());
     } catch (error) {
       console.error('Failed to fetch businesses:', error);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
-  };
+  }, []);
+
+  // Initial fetch
+  useEffect(() => {
+    fetchBusinesses();
+  }, [fetchBusinesses]);
+
+  // ── Live polling: refetch every 5 seconds ───────────────────────────
+  useEffect(() => {
+    pollingRef.current = setInterval(() => {
+      fetchBusinesses(true); // silent = true → no loading spinner flash
+    }, 5000);
+
+    return () => clearInterval(pollingRef.current);
+  }, [fetchBusinesses]);
 
   const fetchAllTransactions = async (bizList, token) => {
     try {
@@ -277,10 +291,17 @@ export default function Dashboard() {
           </div>
 
           <div className="flex items-center space-x-4">
-            <button className="flex items-center text-emerald-600 bg-emerald-50 px-4 py-1.5 rounded-full text-sm font-bold border border-emerald-100 hover:bg-emerald-100 transition-colors">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
-              LIVE POLLING
-            </button>
+            <div className="flex items-center space-x-2">
+              <button className="flex items-center text-emerald-600 bg-emerald-50 px-4 py-1.5 rounded-full text-sm font-bold border border-emerald-100 hover:bg-emerald-100 transition-colors">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
+                LIVE POLLING
+              </button>
+              {lastUpdated && (
+                <span className="text-xs text-gray-400 font-medium whitespace-nowrap">
+                  Last updated: {lastUpdated.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                </span>
+              )}
+            </div>
 
             {/* Currency Toggle */}
             <div className="flex bg-gray-100 rounded-lg p-1 border border-gray-200">
