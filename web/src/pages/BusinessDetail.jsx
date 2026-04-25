@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import Sidebar from '../components/Sidebar';
@@ -112,6 +112,10 @@ export default function BusinessDetail() {
   // Mutating flag for optimistic UI and polling safety
   const isMutating = useRef(false);
 
+  // Live polling
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const pollingRef = useRef(null);
+
   // Currency
   const [currency, setCurrency] = useState('PHP');
   const [exchangeRate, setExchangeRate] = useState(null);
@@ -126,14 +130,9 @@ export default function BusinessDetail() {
       .catch(err => console.error('Exchange rate fetch failed:', err));
   }, []);
 
-  // Initial load
-  useEffect(() => {
-    fetchBusiness();
-    fetchTransactions();
-  }, [businessId]);
-
-  const fetchBusiness = async () => {
-    setLoading(true);
+  // ── Fetch business details ──────────────────────────────────────────
+  const fetchBusiness = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:8080/api/v1/businesses', {
@@ -147,11 +146,12 @@ export default function BusinessDetail() {
     } catch (err) {
       console.error('Failed to fetch business:', err);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
-  };
+  }, [businessId]);
 
-  const fetchTransactions = async () => {
+  // ── Fetch transactions ─────────────────────────────────────────────
+  const fetchTransactions = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`http://localhost:8080/api/v1/transactions/business/${businessId}`, {
@@ -174,10 +174,29 @@ export default function BusinessDetail() {
           businessId: businessId
         })));
       }
+      setLastUpdated(new Date());
     } catch (err) {
       console.error('Failed to fetch transactions:', err);
     }
-  };
+  }, [businessId, business?.name]);
+
+  // Initial load
+  useEffect(() => {
+    fetchBusiness();
+    fetchTransactions();
+  }, [fetchBusiness, fetchTransactions]);
+
+  // ── Live polling: refetch every 5 seconds ───────────────────────────
+  useEffect(() => {
+    pollingRef.current = setInterval(() => {
+      if (!isMutating.current) {
+        fetchBusiness(true);   // silent = true → no loading spinner flash
+        fetchTransactions();
+      }
+    }, 5000);
+
+    return () => clearInterval(pollingRef.current);
+  }, [fetchBusiness, fetchTransactions]);
 
   const handleEditSuccess = (updatedBusiness) => {
     setBusiness(updatedBusiness);
@@ -333,20 +352,35 @@ export default function BusinessDetail() {
             <span className="text-gray-700 font-medium">{business.name}</span>
           </div>
 
-          {/* Currency Toggle */}
-          <div className="flex bg-gray-100 rounded-lg p-1 border border-gray-200">
-            <button
-              onClick={() => setCurrency('PHP')}
-              className={`px-4 py-1 rounded-md text-sm font-bold transition-all ${currency === 'PHP' ? 'bg-white shadow-sm text-gray-800' : 'text-gray-500 hover:text-gray-700'}`}
-            >
-              PHP
-            </button>
-            <button
-              onClick={() => setCurrency('USD')}
-              className={`px-4 py-1 rounded-md text-sm font-bold transition-all ${currency === 'USD' ? 'bg-white shadow-sm text-gray-800' : 'text-gray-500 hover:text-gray-700'}`}
-            >
-              USD
-            </button>
+          <div className="flex items-center space-x-4">
+            {/* Live Polling Badge */}
+            <div className="flex items-center space-x-2">
+              <button className="flex items-center text-emerald-600 bg-emerald-50 px-4 py-1.5 rounded-full text-sm font-bold border border-emerald-100 hover:bg-emerald-100 transition-colors">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
+                LIVE POLLING
+              </button>
+              {lastUpdated && (
+                <span className="text-xs text-gray-400 font-medium whitespace-nowrap">
+                  Last updated: {lastUpdated.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                </span>
+              )}
+            </div>
+
+            {/* Currency Toggle */}
+            <div className="flex bg-gray-100 rounded-lg p-1 border border-gray-200">
+              <button
+                onClick={() => setCurrency('PHP')}
+                className={`px-4 py-1 rounded-md text-sm font-bold transition-all ${currency === 'PHP' ? 'bg-white shadow-sm text-gray-800' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                PHP
+              </button>
+              <button
+                onClick={() => setCurrency('USD')}
+                className={`px-4 py-1 rounded-md text-sm font-bold transition-all ${currency === 'USD' ? 'bg-white shadow-sm text-gray-800' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                USD
+              </button>
+            </div>
           </div>
         </div>
 
