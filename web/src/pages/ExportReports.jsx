@@ -127,7 +127,7 @@ export default function ExportReports() {
       showToast(
         type === 'csv'
           ? 'CSV Generated & Downloaded Successfully!'
-          : 'PDF Report Emailed Successfully!'
+          : 'CSV Report Emailed Successfully!'
       );
 
     } catch (err) {
@@ -271,7 +271,7 @@ export default function ExportReports() {
                 </svg>
               </div>
               <h4 className="text-base font-bold text-gray-900">Email Executive Report</h4>
-              <p className="text-sm text-gray-500 mt-1.5 max-w-xs">Send a formatted PDF summary report directly to your registered email address.</p>
+              <p className="text-sm text-gray-500 mt-1.5 max-w-xs">Send a formatted CSV transaction report directly to your registered email address.</p>
               <button
                 onClick={() => handleExport('email')}
                 disabled={emailLoading}
