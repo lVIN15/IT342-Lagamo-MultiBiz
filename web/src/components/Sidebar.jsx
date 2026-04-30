@@ -1,13 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import ProfileModal from './ProfileModal';
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   // Parse user info safely
   const userString = localStorage.getItem('user');
   const user = userString ? JSON.parse(userString) : { firstname: 'Admin', lastname: 'Workspace' };
+  
+  const [avatarUrl, setAvatarUrl] = useState(user.profilePictureUrl || null);
+  const [imageError, setImageError] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -40,10 +45,22 @@ export default function Sidebar() {
 
   return (
     <div className="w-64 h-screen bg-white hidden md:flex flex-col border-r border-gray-200 sticky top-0">
-      {/* Profile Section */}
-      <div className="p-6 border-b border-gray-100 flex items-center space-x-3">
-        <div className="bg-orange-200 text-orange-800 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">
-          {user.firstname.charAt(0)}{user.lastname ? user.lastname.charAt(0) : ''}
+      {/* Profile Section — Clickable to open Profile Modal */}
+      <div
+        onClick={() => setIsProfileModalOpen(true)}
+        className="p-6 border-b border-gray-100 flex items-center space-x-3 cursor-pointer hover:bg-gray-50 transition-colors"
+      >
+        <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg overflow-hidden bg-orange-200 text-orange-800">
+          {avatarUrl && !imageError ? (
+            <img 
+              src={avatarUrl} 
+              alt="Avatar" 
+              className="w-full h-full object-cover" 
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <>{user.firstname.charAt(0)}{user.lastname ? user.lastname.charAt(0) : ''}</>
+          )}
         </div>
         <div>
           <h1 className="font-semibold text-gray-900 leading-tight">Multi-Biz</h1>
@@ -84,6 +101,19 @@ export default function Sidebar() {
           Log Out
         </button>
       </div>
+
+      {/* Profile Modal */}
+      <ProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        currentAvatarUrl={avatarUrl}
+        onAvatarUpdate={(newUrl) => {
+          setAvatarUrl(newUrl);
+          setImageError(false); // Reset error state on new upload
+          const updatedUser = { ...user, profilePictureUrl: newUrl };
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        }}
+      />
     </div>
   );
 }
