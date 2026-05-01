@@ -91,6 +91,7 @@ public class AuthService {
                 userMap.put("firstname", user.getFirstname());
                 userMap.put("lastname", user.getLastname());
                 userMap.put("role", user.getRole());
+                userMap.put("subscriptionStatus", user.getSubscriptionStatus());
 
                 Map<String, Object> data = new LinkedHashMap<>();
                 data.put("user", userMap);

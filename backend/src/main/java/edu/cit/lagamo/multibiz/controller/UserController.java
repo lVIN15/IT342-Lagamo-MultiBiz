@@ -52,6 +52,7 @@ public class UserController {
         profile.put("lastname", user.getLastname());
         profile.put("email", user.getEmail());
         profile.put("role", user.getRole());
+        profile.put("subscriptionStatus", user.getSubscriptionStatus());
         profile.put("createdAt", user.getCreatedAt().toString());
         profile.put("profilePictureUrl", user.getProfilePictureUrl()); // null if not set
 
