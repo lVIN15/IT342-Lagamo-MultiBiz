@@ -167,6 +167,28 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.ok(data));
     }
 
+    // ── POST /api/auth/logout ────────────────────────────────────────────────
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<?>> logout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body(ApiResponse.fail("INVALID_TOKEN", "No bearer token provided"));
+        }
+        
+        String token = authHeader.substring(7);
+        try {
+            String userIdStr = jwtService.parseToken(token).getSubject();
+            if (userIdStr != null) {
+                java.util.UUID userId = java.util.UUID.fromString(userIdStr);
+                refreshTokenRepository.deleteByUserId(userId);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ApiResponse.fail("INVALID_TOKEN", "Token could not be parsed"));
+        }
+        
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private void persistRefreshToken(User user, String rawToken) {
