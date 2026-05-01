@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import ProfileModal from './ProfileModal';
+import LogoutConfirmationModal from './LogoutConfirmationModal';
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   // Parse user info safely
   const userString = localStorage.getItem('user');
@@ -14,10 +16,26 @@ export default function Sidebar() {
   const [avatarUrl, setAvatarUrl] = useState(user.profilePictureUrl || null);
   const [imageError, setImageError] = useState(false);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        await fetch('http://localhost:8080/api/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      }
+    } catch (e) {
+      console.error("Logout API failed", e);
+    } finally {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+      setIsLogoutModalOpen(false);
+      navigate('/login');
+    }
   };
 
   const navItems = [
@@ -92,8 +110,8 @@ export default function Sidebar() {
       {/* Logout */}
       <div className="p-4 border-t border-gray-100">
         <button
-          onClick={handleLogout}
-          className="flex items-center px-3 py-2 w-full text-gray-600 hover:text-red-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
+          onClick={() => setIsLogoutModalOpen(true)}
+          className="w-full flex items-center px-4 py-3 text-red-600 rounded-xl hover:bg-red-50 hover:text-red-700 transition-colors font-medium"
         >
           <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -113,6 +131,13 @@ export default function Sidebar() {
           const updatedUser = { ...user, profilePictureUrl: newUrl };
           localStorage.setItem('user', JSON.stringify(updatedUser));
         }}
+      />
+
+      {/* Logout Confirmation Modal */}
+      <LogoutConfirmationModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={handleLogout}
       />
     </div>
   );
