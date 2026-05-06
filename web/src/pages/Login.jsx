@@ -55,7 +55,8 @@ export default function Login() {
       localStorage.setItem('refreshToken', payload.refreshToken)
       localStorage.setItem('role',         payload.user.role)
       setSuccess(`Welcome back! Redirecting…`)
-      setTimeout(() => navigate('/dashboard'), 1200)
+      const redirectPath = payload.user.role === 'SUPER_ADMIN' ? '/admin' : '/dashboard'
+      setTimeout(() => navigate(redirectPath), 1200)
     } catch (err) {
       const status = err.response?.status
       if (status === 401) {
@@ -88,7 +89,8 @@ export default function Login() {
         setSuccess(`Welcome back! Redirecting…`)
       }
       
-      setTimeout(() => navigate('/dashboard'), 1200)
+      const redirectPath = payload.user.role === 'SUPER_ADMIN' ? '/admin' : '/dashboard'
+      setTimeout(() => navigate(redirectPath), 1200)
     } catch (err) {
       setError(err.response?.data?.error?.message ?? 'Google login failed. Please try again.')
     } finally {
