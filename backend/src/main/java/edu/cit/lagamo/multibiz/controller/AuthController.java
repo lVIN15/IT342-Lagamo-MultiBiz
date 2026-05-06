@@ -128,7 +128,7 @@ public class AuthController {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .body(ApiResponse.fail("INACTIVE_ACCOUNT",
-                            "Your account is no longer active. Please contact your administrator for assistance."));
+                            "Your account has been suspended. For inquiries, please email multibiz.system@gmail.com."));
         }
 
         // Mobile-only: Block OWNER logins from the Android app

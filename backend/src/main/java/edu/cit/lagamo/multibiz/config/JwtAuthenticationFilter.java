@@ -67,6 +67,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (userOpt.isPresent()) {
                     User user = userOpt.get();
 
+                    // ── Ban Enforcement: block inactive users on every request ──
+                    if (!user.isActive()) {
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        response.setContentType("application/json");
+                        response.getWriter().write(
+                                "{\"success\":false,\"error\":{\"code\":\"ACCOUNT_BANNED\",\"message\":\"Your account has been suspended. For inquiries, please email multibiz.system@gmail.com.\"}}"
+                        );
+                        return; // Stop the filter chain — do NOT proceed
+                    }
+
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
                                     user.getEmail(),      // principal = email (used by services)

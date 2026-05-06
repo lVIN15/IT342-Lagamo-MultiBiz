@@ -62,6 +62,11 @@ public class AuthService {
 
                 if (userOpt.isPresent()) {
                     user = userOpt.get();
+
+                    // Block banned users from logging in via Google
+                    if (!user.isActive()) {
+                        throw new RuntimeException("Your account has been suspended. For inquiries, please email multibiz.system@gmail.com.");
+                    }
                 } else {
                     isNewUser = true;
                     user = new User();
@@ -104,6 +109,9 @@ public class AuthService {
                 throw new IllegalArgumentException("Invalid ID token.");
             }
         } catch (Exception e) {
+            if ("Your account has been suspended. For inquiries, please email multibiz.system@gmail.com.".equals(e.getMessage())) {
+                throw new RuntimeException(e.getMessage());
+            }
             throw new RuntimeException("Google token verification failed.", e);
         }
     }

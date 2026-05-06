@@ -37,7 +37,7 @@ public class UserController {
      */
     @Transactional
     @GetMapping("/me")
-    @PreAuthorize("hasAnyAuthority('STAFF', 'OWNER')")
+    @PreAuthorize("hasAnyAuthority('STAFF', 'OWNER', 'SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getMyProfile(Authentication authentication) {
         User user = userRepository.findByEmail(authentication.getName()).orElse(null);
 
@@ -74,7 +74,7 @@ public class UserController {
      */
     @Transactional
     @PostMapping("/me/profile-picture")
-    @PreAuthorize("hasAnyAuthority('STAFF', 'OWNER')")
+    @PreAuthorize("hasAnyAuthority('STAFF', 'OWNER', 'SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<Map<String, Object>>> uploadProfilePicture(
             @RequestParam("file") MultipartFile file,
             Authentication authentication) {
@@ -110,7 +110,7 @@ public class UserController {
      */
     @Transactional
     @PutMapping("/me/password")
-    @PreAuthorize("hasAnyAuthority('STAFF', 'OWNER')")
+    @PreAuthorize("hasAnyAuthority('STAFF', 'OWNER', 'SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<Void>> changePassword(
             @RequestBody ChangePasswordRequest request,
             Authentication authentication) {
