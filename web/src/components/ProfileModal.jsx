@@ -260,19 +260,21 @@ export default function ProfileModal({ isOpen, onClose, onAvatarUpdate, currentA
                 {/* Badges */}
                 <div className="flex items-center gap-2 mt-3">
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-                    {profile.role?.charAt(0).toUpperCase() + profile.role?.slice(1).toLowerCase()}
+                    {profile.role === 'SUPER_ADMIN' ? 'Super Admin' : profile.role?.charAt(0).toUpperCase() + profile.role?.slice(1).toLowerCase()}
                   </span>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-                    {profile.subscriptionStatus || 'Basic'} Plan
-                  </span>
+                  {profile.role !== 'SUPER_ADMIN' && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                      {profile.subscriptionStatus || 'Basic'} Plan
+                    </span>
+                  )}
                 </div>
               </div>
 
               {/* Details Card */}
               <div className="bg-gray-50 rounded-xl p-4 space-y-3 mb-5">
-                {/* Employee ID */}
+                {/* ID */}
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Employee ID</span>
+                  <span className="text-sm text-gray-500">{profile.role === 'STAFF' ? 'Employee ID' : 'User ID'}</span>
                   <span className="text-sm font-semibold text-gray-800">{formatEmployeeId(profile.id)}</span>
                 </div>
                 <div className="border-t border-gray-200" />
@@ -281,7 +283,7 @@ export default function ProfileModal({ isOpen, onClose, onAvatarUpdate, currentA
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-500">Role</span>
                   <span className="text-sm font-semibold text-gray-800">
-                    {profile.role?.charAt(0).toUpperCase() + profile.role?.slice(1).toLowerCase()}
+                    {profile.role === 'SUPER_ADMIN' ? 'Super Admin' : profile.role?.charAt(0).toUpperCase() + profile.role?.slice(1).toLowerCase()}
                   </span>
                 </div>
                 <div className="border-t border-gray-200" />

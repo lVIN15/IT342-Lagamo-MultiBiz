@@ -38,7 +38,9 @@ export default function Sidebar() {
     }
   };
 
-  const navItems = [
+  const isAdmin = user.role === 'SUPER_ADMIN';
+
+  const ownerNavItems = [
     { name: 'Dashboard', path: '/dashboard', icon: (
       <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
@@ -60,6 +62,26 @@ export default function Sidebar() {
       </svg>
     )}
   ];
+
+  const adminNavItems = [
+    { name: 'Platform Overview', path: '/admin', icon: (
+      <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+    )},
+    { name: 'Users', path: '/admin/users', icon: (
+      <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+    )},
+    { name: 'Businesses', path: '/admin/businesses', icon: (
+      <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+      </svg>
+    )}
+  ];
+
+  const navItems = isAdmin ? adminNavItems : ownerNavItems;
 
   return (
     <div className="w-64 h-screen bg-white hidden md:flex flex-col border-r border-gray-200 sticky top-0">
@@ -94,7 +116,10 @@ export default function Sidebar() {
               <Link
                 to={item.path}
                 className={`flex items-center px-3 py-2.5 rounded-lg font-medium transition-colors ${
-                  location.pathname === item.path || (item.path === '/businesses' && location.pathname.startsWith('/business'))
+                  location.pathname === item.path
+                  || (item.path === '/businesses' && location.pathname.startsWith('/business'))
+                  || (item.path === '/admin/users' && location.pathname.startsWith('/admin/users'))
+                  || (item.path === '/admin/businesses' && location.pathname.startsWith('/admin/businesses'))
                     ? 'bg-blue-50 text-blue-700'
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                 }`}
