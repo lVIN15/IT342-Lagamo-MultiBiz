@@ -58,3 +58,32 @@
 
 ### Mobile Application Deep Integrations
 - **What was implemented?** Finalized the Epic integration bridging the Mobile UI to the Spring Boot Backend. Activated the **Log Details** viewer to dynamically fetch historical transactions and render receipt images with an interactive pinch-to-zoom interface. Bound the **Staff Profile** view to live Spring Security user endpoints. Re-engineered the **Change Password** architecture with fortified backend validation (`BCrypt`), live real-time UI password rule validations, and button-locking safeguards to entirely prevent duplicate request flooding.
+
+## Phase 4 — Vertical Slice Architecture Refactoring
+
+### Architecture Migration
+- **What was implemented?** Migrated the entire codebase from a traditional **Layered Architecture** (controller/service/repository/entity/dto) to a **Vertical Slice Architecture (VSA)**. Each feature is now a self-contained module with its own controller, service, repository, DTOs, and entities organized by business capability rather than technical layer.
+
+### Backend Slices
+- `common/` — Shared infrastructure (SecurityConfig, JwtService, JwtAuthenticationFilter, ApiResponse, GlobalExceptionHandler)
+- `auth/` — Authentication (AuthController, AuthService, RefreshToken, LoginRequest, RegisterRequest, GoogleTokenRequest)
+- `user/` — User profile management (UserController, UserRepository, User entity)
+- `business/` — Business management (BusinessController, BusinessService, Business, BusinessStaff, BusinessRequest)
+- `transaction/` — Transaction processing (TransactionController, TransactionService, Transaction, TransactionRequest)
+- `billing/` — Payment integration (BillingController, PayMongoService, WebhookController)
+- `report/` — Reports & email delivery (ReportController, ReportService, EmailService, EmailReportRequest)
+- `admin/` — Super admin features (AdminController)
+
+### Web Frontend Refactoring
+- Migrated from flat `pages/` and `components/` directories to `features/` structure with `common/components/` for shared UI
+- Feature directories: `auth/`, `dashboard/`, `business/`, `billing/`, `export/`, `admin/`
+
+### Mobile Refactoring
+- Migrated from flat package to feature-based packages: `common/`, `auth/`, `home/`, `transaction/`, `profile/`
+- Updated `AndroidManifest.xml` with new Activity paths
+
+### Automated Test Suite
+- **17 automated integration tests** using JUnit 5 + MockMvc + H2 in-memory database
+- Test coverage across Auth (6), Business (4), Transaction (3), User (3), and Boot Verification (1)
+- All tests pass with zero failures
+- Test isolation via H2 configured in PostgreSQL compatibility mode
