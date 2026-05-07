@@ -69,6 +69,28 @@ export default function Billing() {
     // Check for return from PayMongo checkout
     const status = searchParams.get('status');
     if (status === 'success') {
+      // Confirm the upgrade for the currently authenticated user
+      const token = localStorage.getItem('token');
+      if (token) {
+        fetch('http://localhost:8080/api/v1/billing/confirm', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+        })
+          .then(res => res.json())
+          .then(result => {
+            if (result.success) {
+              // Update localStorage to reflect PRO status
+              const userString = localStorage.getItem('user');
+              if (userString) {
+                const user = JSON.parse(userString);
+                user.subscriptionStatus = 'PRO';
+                localStorage.setItem('user', JSON.stringify(user));
+              }
+              setSubscriptionStatus('PRO');
+            }
+          })
+          .catch(err => console.error('Failed to confirm upgrade:', err));
+      }
       setShowSuccess(true);
     } else if (status === 'cancelled') {
       setShowCancelled(true);
