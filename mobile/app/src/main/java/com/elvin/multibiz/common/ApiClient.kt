@@ -1,4 +1,4 @@
-package com.elvin.multibiz
+package com.elvin.multibiz.common
 
 import okhttp3.Interceptor
 import okhttp3.MultipartBody

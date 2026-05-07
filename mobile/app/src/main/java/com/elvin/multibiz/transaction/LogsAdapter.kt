@@ -1,4 +1,4 @@
-package com.elvin.multibiz
+package com.elvin.multibiz.transaction
 
 import android.view.LayoutInflater
 import android.view.View

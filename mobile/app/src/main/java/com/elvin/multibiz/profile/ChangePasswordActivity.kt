@@ -1,4 +1,4 @@
-package com.elvin.multibiz
+package com.elvin.multibiz.profile
 
 import android.graphics.Color
 import android.os.Bundle
@@ -11,7 +11,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.elvin.multibiz.utils.SessionManager
+import com.elvin.multibiz.common.ApiClient
+import com.elvin.multibiz.common.ChangePasswordRequest
+import com.elvin.multibiz.common.SessionManager
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView

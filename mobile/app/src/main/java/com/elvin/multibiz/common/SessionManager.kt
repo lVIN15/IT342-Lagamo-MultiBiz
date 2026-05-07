@@ -1,4 +1,4 @@
-package com.elvin.multibiz.utils
+package com.elvin.multibiz.common
 
 import android.content.Context
 import android.content.SharedPreferences

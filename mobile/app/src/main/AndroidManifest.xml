@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MultiBiz">
         <activity
-            android:name=".LoginActivity"
+            android:name=".auth.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,19 +29,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".HomeActivity"
+            android:name=".home.HomeActivity"
             android:exported="false" />
         <activity
-            android:name=".LogsActivity"
+            android:name=".transaction.LogsActivity"
             android:exported="false" />
         <activity
-            android:name=".ProfileActivity"
+            android:name=".profile.ProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".ChangePasswordActivity"
+            android:name=".profile.ChangePasswordActivity"
             android:exported="false" />
         <activity
-            android:name=".LogDetailsActivity"
+            android:name=".transaction.LogDetailsActivity"
             android:exported="false" />
 
         <!-- FileProvider for camera image capture -->

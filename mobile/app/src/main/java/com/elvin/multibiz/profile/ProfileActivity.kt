@@ -1,4 +1,4 @@
-package com.elvin.multibiz
+package com.elvin.multibiz.profile
 
 import android.content.Intent
 import android.net.Uri
@@ -11,8 +11,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import coil.transform.CircleCropTransformation
-import com.elvin.multibiz.utils.SessionManager
-import com.elvin.multibiz.utils.setupBottomNav
+import com.elvin.multibiz.auth.LoginActivity
+import com.elvin.multibiz.common.ApiClient
+import com.elvin.multibiz.common.UserProfile
+import com.elvin.multibiz.common.SessionManager
+import com.elvin.multibiz.common.setupBottomNav
+import com.elvin.multibiz.transaction.ImagePreviewDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.imageview.ShapeableImageView
 import kotlinx.coroutines.launch

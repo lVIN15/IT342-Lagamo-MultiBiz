@@ -1,4 +1,4 @@
-package com.elvin.multibiz.utils
+package com.elvin.multibiz.common
 
 import android.app.Activity
 import android.content.Intent
@@ -9,9 +9,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
-import com.elvin.multibiz.HomeActivity
-import com.elvin.multibiz.LogsActivity
-import com.elvin.multibiz.ProfileActivity
+import com.elvin.multibiz.home.HomeActivity
+import com.elvin.multibiz.transaction.LogsActivity
+import com.elvin.multibiz.profile.ProfileActivity
 import com.elvin.multibiz.R
 
 private const val COLOR_ACTIVE   = "#123458"

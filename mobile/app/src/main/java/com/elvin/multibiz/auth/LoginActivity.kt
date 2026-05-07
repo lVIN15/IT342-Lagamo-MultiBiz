@@ -1,4 +1,4 @@
-package com.elvin.multibiz
+package com.elvin.multibiz.auth
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -11,7 +11,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.toColorInt
 import androidx.lifecycle.lifecycleScope
-import com.elvin.multibiz.utils.SessionManager
+import com.elvin.multibiz.common.ApiClient
+import com.elvin.multibiz.common.ApiResponse
+import com.elvin.multibiz.common.ContentData
+import com.elvin.multibiz.common.LoginRequest
+import com.elvin.multibiz.common.SessionManager
+import com.elvin.multibiz.home.HomeActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText

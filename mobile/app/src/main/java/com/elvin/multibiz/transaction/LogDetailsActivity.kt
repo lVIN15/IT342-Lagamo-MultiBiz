@@ -1,4 +1,4 @@
-package com.elvin.multibiz
+package com.elvin.multibiz.transaction
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
