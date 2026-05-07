@@ -186,17 +186,20 @@ export default function BusinessDetail() {
     fetchTransactions();
   }, [fetchBusiness, fetchTransactions]);
 
-  // ── Live polling: refetch every 5 seconds ───────────────────────────
+  // Check if ANY modal is open — pause polling when editing
+  const isAnyModalOpen = editModalOpen || staffModalOpen || incomeModalOpen || isRemoveModalOpen || !!editModalTx || !!deleteModalTx;
+
+  // ── Live polling: refetch every 5 seconds (paused when modals are open) ──
   useEffect(() => {
     pollingRef.current = setInterval(() => {
-      if (!isMutating.current) {
+      if (!isMutating.current && !isAnyModalOpen) {
         fetchBusiness(true);   // silent = true → no loading spinner flash
         fetchTransactions();
       }
     }, 5000);
 
     return () => clearInterval(pollingRef.current);
-  }, [fetchBusiness, fetchTransactions]);
+  }, [fetchBusiness, fetchTransactions, isAnyModalOpen]);
 
   const handleEditSuccess = (updatedBusiness) => {
     setBusiness(updatedBusiness);
@@ -293,8 +296,13 @@ export default function BusinessDetail() {
       : baseData;
   }, [incomeLogs, chartRange, currency, rate]);
 
-  // Compute Y-axis formatter based on range
-  const yTickFormatter = (v) => `${currencySymbol}${(v / 1000).toFixed(0)}k`;
+  // Compute Y-axis formatter based on range — smart formatting for all amounts
+  const yTickFormatter = (v) => {
+    if (v === 0) return `${currencySymbol}0`;
+    if (v >= 1000000) return `${currencySymbol}${(v / 1000000).toFixed(1)}M`;
+    if (v >= 1000) return `${currencySymbol}${(v / 1000).toFixed(0)}k`;
+    return `${currencySymbol}${v.toLocaleString()}`;
+  };
 
   if (loading) {
     return (
