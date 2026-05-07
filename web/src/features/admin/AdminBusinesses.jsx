@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../../common/components/Sidebar';
 
 function DeleteConfirmModal({ isOpen, onClose, onConfirm, businessName }) {
   if (!isOpen) return null;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
-import CreateBusinessModal from '../components/CreateBusinessModal';
+import Sidebar from '../../common/components/Sidebar';
+import CreateBusinessModal from './components/CreateBusinessModal';
 
 // Category → visual config mapping
 const CATEGORY_CONFIG = {

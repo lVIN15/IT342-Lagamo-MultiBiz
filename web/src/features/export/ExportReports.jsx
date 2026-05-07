@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar from '../components/Sidebar';
-import { exportStrategies } from '../services/export';
+import Sidebar from '../../common/components/Sidebar';
+import { exportStrategies } from './services';
 
 const QUICK_FILTERS = ['This Month', 'Last Quarter', 'Year to Date'];
 

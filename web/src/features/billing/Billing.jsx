@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../../common/components/Sidebar';
 import { useSearchParams } from 'react-router-dom';
 
 const PLANS = [

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import Sidebar from '../components/Sidebar';
-import BusinessCard from '../components/BusinessCard';
-import AddBusinessModal from '../components/AddBusinessModal';
+import Sidebar from '../../common/components/Sidebar';
+import BusinessCard from '../business/components/BusinessCard';
+import AddBusinessModal from '../business/components/AddBusinessModal';
 
 /* ── Chart Tooltip (matches BusinessDetail style) ──────────────────────── */
 function CustomTooltip({ active, payload, label, currencySymbol }) {

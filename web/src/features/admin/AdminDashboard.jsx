@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../../common/components/Sidebar';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();

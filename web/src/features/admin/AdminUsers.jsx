@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../../common/components/Sidebar';
 
 function ConfirmModal({ isOpen, onClose, onConfirm, title, message, confirmLabel, confirmColor }) {
   if (!isOpen) return null;

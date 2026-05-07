@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import Sidebar from '../components/Sidebar';
-import AddStaffModal from '../components/AddStaffModal';
-import LogIncomeModal from '../components/LogIncomeModal';
-import EditBusinessModal from '../components/EditBusinessModal';
-import DashboardEditTxModal from '../components/DashboardEditTxModal';
-import DashboardDeleteTxModal from '../components/DashboardDeleteTxModal';
+import Sidebar from '../../common/components/Sidebar';
+import AddStaffModal from './components/AddStaffModal';
+import LogIncomeModal from './components/LogIncomeModal';
+import EditBusinessModal from './components/EditBusinessModal';
+import DashboardEditTxModal from '../dashboard/components/DashboardEditTxModal';
+import DashboardDeleteTxModal from '../dashboard/components/DashboardDeleteTxModal';
 
 /* ── Process Chart Data (Matches Dashboard logic) ───────────────────────── */
 function aggregateByRange(allTxns, range) {
