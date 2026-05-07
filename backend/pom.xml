@@ -72,6 +72,12 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- ── H2 In-Memory Database (test isolation) ──────────────────────── -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 		<!-- ── JJWT (JWT generation & validation) ────────────────────────── -->
 		<dependency>
