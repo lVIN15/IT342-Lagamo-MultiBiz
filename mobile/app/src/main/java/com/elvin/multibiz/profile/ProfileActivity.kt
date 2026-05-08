@@ -1,5 +1,7 @@
 package com.elvin.multibiz.profile
 
+import com.elvin.multibiz.R
+
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle

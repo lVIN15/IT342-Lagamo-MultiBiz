@@ -1,5 +1,7 @@
 package com.elvin.multibiz.home
 
+import com.elvin.multibiz.R
+
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent

@@ -1,5 +1,7 @@
 package com.elvin.multibiz.profile
 
+import com.elvin.multibiz.R
+
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable

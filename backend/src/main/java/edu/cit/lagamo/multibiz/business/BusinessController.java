@@ -87,6 +87,26 @@ public class BusinessController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @DeleteMapping("/{id}/staff/{staffUserId}")
+    @PreAuthorize("hasAuthority('OWNER')")
+    public ResponseEntity<ApiResponse<Void>> removeStaff(
+            @PathVariable UUID id,
+            @PathVariable UUID staffUserId,
+            Authentication authentication) {
+
+        ApiResponse<Void> response = businessService.removeStaff(id, staffUserId, authentication.getName());
+        
+        if (!response.isSuccess()) {
+            if ("NOT_FOUND".equals(response.getError().getCode())) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            } else if ("FORBIDDEN".equals(response.getError().getCode())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/my-assignments")
     @PreAuthorize("hasAnyAuthority('STAFF', 'OWNER')")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getMyAssignments(Authentication authentication) {

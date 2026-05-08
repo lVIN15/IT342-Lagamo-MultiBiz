@@ -185,4 +185,23 @@ public class BusinessService {
 
         return ApiResponse.ok(saved);
     }
+
+    @Transactional
+    public ApiResponse<Void> removeStaff(UUID businessId, UUID staffUserId, String ownerEmail) {
+        Business business = businessRepository.findById(businessId).orElse(null);
+        if (business == null) {
+            return ApiResponse.fail("NOT_FOUND", "Business not found");
+        }
+        if (!business.getOwner().getEmail().equals(ownerEmail)) {
+            return ApiResponse.fail("FORBIDDEN", "You do not own this business");
+        }
+
+        BusinessStaff staffAssignment = businessStaffRepository.findByBusinessIdAndUserId(businessId, staffUserId).orElse(null);
+        if (staffAssignment == null) {
+            return ApiResponse.fail("NOT_FOUND", "Staff assignment not found");
+        }
+
+        businessStaffRepository.delete(staffAssignment);
+        return ApiResponse.ok(null);
+    }
 }

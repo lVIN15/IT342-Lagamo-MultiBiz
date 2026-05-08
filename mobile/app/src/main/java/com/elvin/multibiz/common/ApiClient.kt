@@ -1,5 +1,7 @@
 package com.elvin.multibiz.common
 
+import com.elvin.multibiz.R
+
 import okhttp3.Interceptor
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient

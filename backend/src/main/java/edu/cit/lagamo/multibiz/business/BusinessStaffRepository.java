@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -13,4 +14,6 @@ public interface BusinessStaffRepository extends JpaRepository<BusinessStaff, UU
     List<BusinessStaff> findByBusinessId(UUID businessId);
 
     List<BusinessStaff> findByUserId(UUID userId);
+
+    Optional<BusinessStaff> findByBusinessIdAndUserId(UUID businessId, UUID userId);
 }

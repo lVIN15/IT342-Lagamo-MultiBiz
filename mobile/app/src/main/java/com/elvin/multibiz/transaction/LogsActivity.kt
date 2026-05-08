@@ -1,5 +1,7 @@
 package com.elvin.multibiz.transaction
 
+import com.elvin.multibiz.R
+
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast

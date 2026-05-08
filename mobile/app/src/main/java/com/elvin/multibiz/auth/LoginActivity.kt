@@ -1,5 +1,7 @@
 package com.elvin.multibiz.auth
 
+import com.elvin.multibiz.R
+
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
