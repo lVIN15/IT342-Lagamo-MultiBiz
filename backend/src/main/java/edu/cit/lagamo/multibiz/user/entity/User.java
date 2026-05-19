@@ -38,6 +38,9 @@ public class User {
     @Column(name = "subscription_status", nullable = false)
     private String subscriptionStatus = "BASIC";
 
+    @Column(name = "subscription_end_date")
+    private LocalDateTime subscriptionEndDate;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -135,6 +138,14 @@ public class User {
 
     public void setSubscriptionStatus(String subscriptionStatus) {
         this.subscriptionStatus = subscriptionStatus;
+    }
+
+    public LocalDateTime getSubscriptionEndDate() {
+        return subscriptionEndDate;
+    }
+
+    public void setSubscriptionEndDate(LocalDateTime subscriptionEndDate) {
+        this.subscriptionEndDate = subscriptionEndDate;
     }
 
     public LocalDateTime getCreatedAt() {

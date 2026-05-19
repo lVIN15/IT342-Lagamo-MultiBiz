@@ -310,13 +310,12 @@ export default function ExportReports() {
                     <th className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-6 py-3">Report Type</th>
                     <th className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-6 py-3">Target Business</th>
                     <th className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-6 py-3">Status</th>
-                    <th className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-6 py-3">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {recentExports.length === 0 ? (
                     <tr>
-                      <td colSpan="5" className="px-6 py-8 text-center text-sm text-gray-400">No recent exports performed on this device.</td>
+                      <td colSpan="4" className="px-6 py-8 text-center text-sm text-gray-400">No recent exports performed on this device.</td>
                     </tr>
                   ) : (
                     recentExports.map((exp, i) => (
@@ -332,32 +331,6 @@ export default function ExportReports() {
                         }`}>
                           {exp.status}
                         </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        {exp.action === 'download' && (
-                          <button 
-                            onClick={() => {
-                              showToast('Re-downloading is not supported for cached states. Generate a new report.');
-                            }}
-                            className="text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors flex items-center gap-1 cursor-not-allowed"
-                          >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Re-generate
-                          </button>
-                        )}
-                        {exp.action === 'resend' && (
-                          <button className="text-sm font-medium text-[#123458] hover:text-opacity-80 transition-colors flex items-center gap-1">
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                            Resend
-                          </button>
-                        )}
-                        {exp.action === 'disabled' && (
-                          <span className="text-sm text-gray-400">Not available</span>
-                        )}
                       </td>
                     </tr>
                     ))

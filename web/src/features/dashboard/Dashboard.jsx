@@ -98,6 +98,9 @@ export default function Dashboard() {
   // Currency
   const [currency, setCurrency] = useState('PHP');
   const [exchangeRate, setExchangeRate] = useState(null); // PHP per 1 USD
+  
+  // Expiry notice
+  const [expiryNotice, setExpiryNotice] = useState(null);
 
   // ── Fetch exchange rate on mount ─────────────────────────────────────
   useEffect(() => {
@@ -107,6 +110,32 @@ export default function Dashboard() {
         if (data?.rates?.PHP) setExchangeRate(data.rates.PHP);
       })
       .catch(err => console.error('Exchange rate fetch failed:', err));
+  }, []);
+
+  // ── Check subscription expiry ────────────────────────────────────────
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    fetch('http://localhost:8080/api/v1/users/me', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(result => {
+         if (result.success && result.data) {
+           const user = result.data;
+           if (user.subscriptionStatus === 'PRO' && user.subscriptionEndDate) {
+              const endDate = new Date(user.subscriptionEndDate);
+              const now = new Date();
+              const diffTime = endDate - now;
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+              
+              if (diffDays >= 0 && diffDays <= 5 && !sessionStorage.getItem('expiryNoticeShown')) {
+                 setExpiryNotice({ daysLeft: diffDays });
+                 sessionStorage.setItem('expiryNoticeShown', 'true');
+              }
+           }
+         }
+      })
+      .catch(err => console.error('Failed to fetch user:', err));
   }, []);
 
   // ── Fetch businesses + transactions ──────────────────────────────────
@@ -488,6 +517,47 @@ export default function Dashboard() {
         onClose={() => setIsModalOpen(false)}
         onAddSuccess={handleAddSuccess}
       />
+
+      {/* Expiry Notice Modal */}
+      {expiryNotice && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 relative">
+            <button 
+              onClick={() => setExpiryNotice(null)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+              </div>
+              <h2 className="text-xl font-bold text-[#123458]">Subscription Expiring Soon</h2>
+            </div>
+            <p className="text-gray-600 mb-6 text-sm">
+              Your Multi-Biz Pro plan will expire in <span className="font-bold text-[#123458]">{expiryNotice.daysLeft} day{expiryNotice.daysLeft !== 1 ? 's' : ''}</span>. 
+              Please renew to continue accessing premium features and operations for all your businesses.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button 
+                onClick={() => setExpiryNotice(null)}
+                className="px-4 py-2 text-gray-500 hover:text-gray-700 text-sm font-semibold transition-colors"
+              >
+                Remind Me Later
+              </button>
+              <button 
+                onClick={() => {
+                  setExpiryNotice(null);
+                  window.location.href = '/billing';
+                }}
+                className="bg-[#123458] hover:bg-[#0f2a47] text-white px-5 py-2 rounded-lg text-sm font-bold transition-colors shadow-md"
+              >
+                Renew Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

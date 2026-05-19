@@ -71,6 +71,11 @@ public class BillingController {
         }
 
         user.setSubscriptionStatus("PRO");
+        if (user.getSubscriptionEndDate() != null && user.getSubscriptionEndDate().isAfter(java.time.LocalDateTime.now())) {
+            user.setSubscriptionEndDate(user.getSubscriptionEndDate().plusMonths(1));
+        } else {
+            user.setSubscriptionEndDate(java.time.LocalDateTime.now().plusMonths(1));
+        }
         userRepository.save(user);
 
         Map<String, String> data = new LinkedHashMap<>();

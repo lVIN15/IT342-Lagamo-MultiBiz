@@ -33,6 +33,7 @@ export default function Sidebar() {
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
+      sessionStorage.removeItem('expiryNoticeShown');
       setIsLogoutModalOpen(false);
       navigate('/login');
     }

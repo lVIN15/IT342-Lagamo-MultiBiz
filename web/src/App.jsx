@@ -9,6 +9,7 @@ import ExportReports from './features/export/ExportReports'
 import AdminDashboard from './features/admin/AdminDashboard'
 import AdminUsers from './features/admin/AdminUsers'
 import AdminBusinesses from './features/admin/AdminBusinesses'
+import Landing from './features/landing/Landing'
 import './index.css'
 
 const ProtectedRoute = ({ children }) => {
@@ -39,7 +40,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route 

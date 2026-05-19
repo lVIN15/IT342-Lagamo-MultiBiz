@@ -50,7 +50,8 @@ public class WebhookController {
                     .asText("");
 
             if (referenceNumber.isEmpty()) {
-                return ResponseEntity.badRequest().body("missing reference_number");
+                System.out.println("Webhook error: missing reference_number");
+                return ResponseEntity.ok("missing reference_number - ignored");
             }
 
             UUID userId = UUID.fromString(referenceNumber);
@@ -59,14 +60,22 @@ public class WebhookController {
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
                 user.setSubscriptionStatus("PRO");
+                if (user.getSubscriptionEndDate() != null && user.getSubscriptionEndDate().isAfter(java.time.LocalDateTime.now())) {
+                    user.setSubscriptionEndDate(user.getSubscriptionEndDate().plusMonths(1));
+                } else {
+                    user.setSubscriptionEndDate(java.time.LocalDateTime.now().plusMonths(1));
+                }
                 userRepository.save(user);
+                System.out.println("Webhook success: upgraded user " + userId);
                 return ResponseEntity.ok("upgraded");
             } else {
-                return ResponseEntity.badRequest().body("user not found");
+                System.out.println("Webhook error: user not found for " + userId);
+                return ResponseEntity.ok("user not found - ignored");
             }
 
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("webhook processing error: " + e.getMessage());
+            System.err.println("Webhook processing error: " + e.getMessage());
+            return ResponseEntity.ok("webhook processing error - ignored");
         }
     }
 }

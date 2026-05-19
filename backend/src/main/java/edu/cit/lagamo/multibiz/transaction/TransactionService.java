@@ -61,6 +61,54 @@ public class TransactionService {
             return ApiResponse.fail("FORBIDDEN", "You are not authorized for this business");
         }
 
+        // --- Subscription Hard Lock (Prevents exploiting expired Pro plans) ---
+        User owner = business.getOwner();
+        boolean isBasic = true;
+        if ("PRO".equals(owner.getSubscriptionStatus())) {
+            if (owner.getSubscriptionEndDate() == null || java.time.LocalDateTime.now().isBefore(owner.getSubscriptionEndDate())) {
+                isBasic = false;
+            } else {
+                owner.setSubscriptionStatus("BASIC");
+                userRepository.save(owner);
+            }
+        }
+        
+        if (isBasic) {
+            // Check if this business is the first business created by the owner
+            List<Business> ownerBusinesses = businessRepository.findByOwnerId(owner.getId());
+            ownerBusinesses.sort(java.util.Comparator.comparing(Business::getCreatedAt));
+            if (!ownerBusinesses.isEmpty() && !ownerBusinesses.get(0).getId().equals(business.getId())) {
+                if ("OWNER".equals(user.getRole())) {
+                    return ApiResponse.fail("FORBIDDEN", "Subscription Lock: This business is locked for new transactions because you exceed the 1 business limit on the Basic plan. Upgrade to PRO to resume operations for this location.");
+                } else {
+                    return ApiResponse.fail("FORBIDDEN", "Subscription Lock: This business is locked for new transactions because the business owner's subscription has expired. Please contact the owner to resume operations.");
+                }
+            }
+            
+            // Check if this staff member is within the allowed 3 limit
+            if ("STAFF".equals(user.getRole())) {
+                List<BusinessStaff> allOwnerStaff = new java.util.ArrayList<>();
+                for (Business b : ownerBusinesses) {
+                    allOwnerStaff.addAll(businessStaffRepository.findByBusinessId(b.getId()));
+                }
+                
+                allOwnerStaff.sort(java.util.Comparator.comparing(BusinessStaff::getAssignedAt));
+                
+                boolean isAllowedStaff = false;
+                for (int i = 0; i < Math.min(3, allOwnerStaff.size()); i++) {
+                    if (allOwnerStaff.get(i).getUser().getId().equals(user.getId())) {
+                        isAllowedStaff = true;
+                        break;
+                    }
+                }
+                
+                if (!isAllowedStaff) {
+                    return ApiResponse.fail("FORBIDDEN", "Subscription Lock: Your account is temporarily locked from logging transactions because the business owner exceeded the Basic plan limit (3 staff max). Please contact the owner.");
+                }
+            }
+        }
+        // ----------------------------------------------------------------------
+
         Transaction tx = new Transaction();
         tx.setBusiness(business);
         tx.setStaff(user);

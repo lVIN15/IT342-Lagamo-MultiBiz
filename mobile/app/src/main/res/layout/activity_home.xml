@@ -26,12 +26,6 @@
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:textStyle="bold" />
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@android:drawable/ic_menu_help"
-            app:tint="#FFFFFF" />
     </LinearLayout>
 
     <ScrollView

@@ -116,4 +116,14 @@ public class BusinessController {
         }
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/check-staff-limit")
+    @PreAuthorize("hasAuthority('OWNER')")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> checkStaffLimit(Authentication authentication) {
+        ApiResponse<Map<String, Object>> response = businessService.checkStaffLimit(authentication.getName());
+        if (!response.isSuccess()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+        return ResponseEntity.ok(response);
+    }
 }

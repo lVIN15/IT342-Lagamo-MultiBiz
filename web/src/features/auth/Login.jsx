@@ -103,21 +103,23 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-10"
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-10 relative"
          style={{ backgroundColor: '#e8e5df' }}>
+
+      {/* ── Back to Landing ── */}
+      <Link to="/" className="absolute top-6 left-6 text-[#1a3350] hover:text-blue-700 flex items-center gap-2 text-sm font-semibold transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+        </svg>
+        Back to Home
+      </Link>
 
       {/* ── Card ── */}
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg px-8 py-10">
 
         {/* Logo */}
-        <div className="flex flex-col items-center mb-6">
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-3"
-               style={{ backgroundColor: '#1a3350' }}>
-            {/* Bank / building icon */}
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 10v11M12 10v11M16 10v11" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
+        <div className="flex flex-col items-center mb-4">
+          <img src="/multibiz_logo.png" alt="Multi-Biz Logo" className="h-16 w-auto object-contain mb-1" />
           <span className="text-xl font-bold" style={{ color: '#1a3350' }}>Multi-Biz</span>
           <p className="text-sm text-gray-400 mt-0.5">Manage your finances with confidence</p>
         </div>
@@ -146,14 +148,7 @@ export default function Login() {
 
           {/* Password */}
           <div className="mb-6">
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="text-sm font-medium text-gray-700">Password</label>
-              <button type="button"
-                      className="text-xs font-medium cursor-pointer hover:underline"
-                      style={{ color: '#1a3350' }}>
-                Forgot password?
-              </button>
-            </div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2">
                 <LockIcon />

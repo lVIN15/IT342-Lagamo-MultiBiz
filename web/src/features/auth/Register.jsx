@@ -101,23 +101,23 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10"
+    <div className="min-h-screen flex items-center justify-center px-4 py-10 relative"
          style={{ backgroundColor: '#e8e5df' }}>
+
+      {/* ── Back to Landing ── */}
+      <Link to="/" className="absolute top-6 left-6 text-[#1a3350] hover:text-blue-700 flex items-center gap-2 text-sm font-semibold transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+        </svg>
+        Back to Home
+      </Link>
+
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg px-8 py-10">
 
         {/* ── Logo ── */}
-        <div className="flex flex-col items-center mb-6">
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
-               style={{ backgroundColor: '#1a3350' }}>
-            {/* 2×2 grid icon */}
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <rect x="3"  y="3"  width="8" height="8" rx="1.5" fill="white"/>
-              <rect x="13" y="3"  width="8" height="8" rx="1.5" fill="white"/>
-              <rect x="3"  y="13" width="8" height="8" rx="1.5" fill="white"/>
-              <rect x="13" y="13" width="8" height="8" rx="1.5" fill="white"/>
-            </svg>
-          </div>
-          <span className="text-lg font-semibold" style={{ color: '#1a3350' }}>Multi-Biz</span>
+        <div className="flex flex-col items-center mb-2">
+          <img src="/multibiz_logo.png" alt="Multi-Biz Logo" className="h-16 w-auto object-contain mb-1" />
+          <span className="text-xl font-bold" style={{ color: '#1a3350' }}>Multi-Biz</span>
         </div>
 
         <h1 className="text-2xl font-bold text-center text-gray-900 mb-1">

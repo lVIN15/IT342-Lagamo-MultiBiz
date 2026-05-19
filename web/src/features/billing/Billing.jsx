@@ -5,19 +5,33 @@ import { useSearchParams } from 'react-router-dom';
 const PLANS = [
   {
     id: 'basic',
-    name: 'Basic',
+    name: 'Starter Plan (Basic)',
     price: '₱0',
     period: '/mo',
-    subtitle: 'For getting started',
-    features: ['Up to 3 Businesses', 'Basic Transactions', 'Email Support'],
+    subtitle: 'A small, single-location business just getting started with digital management.',
+    features: [
+      'Manage 1 Business Location',
+      'Up to 3 Staff Accounts',
+      'Dedicated Staff Mobile App',
+      'Real-time Web Dashboard',
+      'Download CSV Reports',
+      'Send Reports via Email',
+    ],
   },
   {
     id: 'pro',
-    name: 'Pro Plan',
+    name: 'Multi-Biz Pro Plan',
     price: '₱500',
     period: '/mo',
-    subtitle: 'For growing businesses',
-    features: ['Unlimited Businesses', 'Advanced Analytics', 'Priority Support', 'Email Reports'],
+    subtitle: 'A scaling business owner expanding to new locations and hiring a larger team.',
+    features: [
+      'Unlimited Business Locations',
+      'Unlimited Staff Accounts',
+      'Dedicated Staff Mobile App',
+      'Real-time Web Dashboard',
+      'Download CSV Reports',
+      'Send Reports via Email',
+    ],
     highlighted: true,
   },
 ];
@@ -30,6 +44,7 @@ export default function Billing() {
   const [error, setError] = useState('');
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [daysLeft, setDaysLeft] = useState(null);
 
   const isPro = subscriptionStatus === 'PRO';
 
@@ -47,12 +62,24 @@ export default function Billing() {
         });
         const result = await res.json();
         if (res.ok && result.success) {
-          setSubscriptionStatus(result.data.subscriptionStatus || 'BASIC');
+          const userObj = result.data;
+          setSubscriptionStatus(userObj.subscriptionStatus || 'BASIC');
+          
+          if (userObj.subscriptionStatus === 'PRO' && userObj.subscriptionEndDate) {
+            const endDate = new Date(userObj.subscriptionEndDate);
+            const now = new Date();
+            const diffTime = endDate - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            setDaysLeft(diffDays);
+          } else {
+            setDaysLeft(null);
+          }
+
           // Keep localStorage in sync with the database
           const userString = localStorage.getItem('user');
           if (userString) {
             const user = JSON.parse(userString);
-            user.subscriptionStatus = result.data.subscriptionStatus || 'BASIC';
+            user.subscriptionStatus = userObj.subscriptionStatus || 'BASIC';
             localStorage.setItem('user', JSON.stringify(user));
           }
         }
@@ -267,14 +294,55 @@ export default function Billing() {
                   <>
                     {/* Pro status display */}
                     <div className="bg-emerald-50 rounded-lg p-4 flex items-center gap-3">
-                      <svg className="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-8 h-8 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       <div>
                         <p className="text-sm font-bold text-emerald-700">Pro Plan Active</p>
-                        <p className="text-xs text-emerald-600 mt-0.5">All premium features are unlocked.</p>
+                        <p className="text-xs text-emerald-600 mt-0.5">
+                          {daysLeft !== null 
+                            ? (daysLeft <= 5 
+                                ? `Expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}.` 
+                                : `Active for ${daysLeft} more day${daysLeft !== 1 ? 's' : ''}.`)
+                            : 'All premium features are unlocked.'}
+                        </p>
                       </div>
                     </div>
+                    
+                    {/* Early Renewal Option */}
+                    {daysLeft !== null && daysLeft <= 5 && (
+                      <div className="mt-4">
+                        <div className="bg-[#f5f7fa] rounded-lg p-4 flex items-center justify-between mb-4">
+                          <span className="text-sm text-gray-500 font-medium">Renewal cost</span>
+                          <span className="text-2xl font-extrabold text-gray-900">₱500</span>
+                        </div>
+                        {error && (
+                          <div className="bg-red-50 text-red-700 p-3 rounded-lg text-sm border border-red-200 flex items-start gap-2 mb-4">
+                            <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {error}
+                          </div>
+                        )}
+                        <button
+                          onClick={handleUpgrade}
+                          disabled={isProcessing}
+                          className="w-full flex items-center justify-center gap-2 bg-[#123458] hover:bg-[#0f2a47] text-white py-3 rounded-xl text-sm font-bold transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                          {isProcessing ? (
+                            <>
+                              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                              </svg>
+                              Processing...
+                            </>
+                          ) : (
+                            'Renew Pro Plan'
+                          )}
+                        </button>
+                      </div>
+                    )}
                   </>
                 ) : (
                   <>

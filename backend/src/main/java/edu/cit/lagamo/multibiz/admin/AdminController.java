@@ -93,6 +93,13 @@ public class AdminController {
         }
         String newStatus = "PRO".equals(user.getSubscriptionStatus()) ? "BASIC" : "PRO";
         user.setSubscriptionStatus(newStatus);
+        
+        if ("PRO".equals(newStatus)) {
+            user.setSubscriptionEndDate(java.time.LocalDateTime.now().plusMonths(1));
+        } else {
+            user.setSubscriptionEndDate(null);
+        }
+        
         userRepository.save(user);
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("id", user.getId().toString());

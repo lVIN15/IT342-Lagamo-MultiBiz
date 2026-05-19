@@ -42,6 +42,16 @@ export default function AddStaffModal({ isOpen, onClose, businessName, businessI
     }
 
     try {
+      // Step 0: Check if adding staff exceeds the subscription limit
+      const limitRes = await fetch('http://localhost:8080/api/v1/businesses/check-staff-limit', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const limitResult = await limitRes.json();
+      
+      if (!limitRes.ok || !limitResult.success) {
+        throw new Error(limitResult.error?.message || 'Staff limit exceeded.');
+      }
+
       // Step 1: Register the staff user via /api/auth/register
       const registerRes = await fetch('http://localhost:8080/api/auth/register', {
         method: 'POST',

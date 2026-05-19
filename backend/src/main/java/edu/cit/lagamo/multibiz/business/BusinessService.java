@@ -39,6 +39,24 @@ public class BusinessService {
             return ApiResponse.fail("NOT_FOUND", "Owner not found");
         }
 
+        boolean isBasic = true;
+        if ("PRO".equals(owner.getSubscriptionStatus())) {
+            if (owner.getSubscriptionEndDate() == null || java.time.LocalDateTime.now().isBefore(owner.getSubscriptionEndDate())) {
+                isBasic = false;
+            } else {
+                // Subscription has expired
+                owner.setSubscriptionStatus("BASIC");
+                userRepository.save(owner);
+            }
+        }
+
+        if (isBasic) {
+            List<Business> existingBusinesses = businessRepository.findByOwnerId(owner.getId());
+            if (existingBusinesses.size() >= 1) {
+                return ApiResponse.fail("LIMIT_EXCEEDED", "Starter plan is limited to 1 business. Please upgrade to Pro.");
+            }
+        }
+
         Business business = new Business();
         business.setOwner(owner);
         business.setName(request.getName());
@@ -165,6 +183,29 @@ public class BusinessService {
             return ApiResponse.fail("NOT_FOUND", "Staff user not found");
         }
 
+        User owner = business.getOwner();
+        boolean isBasic = true;
+        if ("PRO".equals(owner.getSubscriptionStatus())) {
+            if (owner.getSubscriptionEndDate() == null || java.time.LocalDateTime.now().isBefore(owner.getSubscriptionEndDate())) {
+                isBasic = false;
+            } else {
+                // Subscription has expired
+                owner.setSubscriptionStatus("BASIC");
+                userRepository.save(owner);
+            }
+        }
+
+        if (isBasic) {
+            List<Business> businesses = businessRepository.findByOwnerId(owner.getId());
+            long totalStaffCount = businesses.stream()
+                .mapToLong(b -> businessStaffRepository.findByBusinessId(b.getId()).size())
+                .sum();
+                
+            if (totalStaffCount >= 3) {
+                return ApiResponse.fail("LIMIT_EXCEEDED", "Starter plan is limited to 3 staff accounts total. Please upgrade to Pro.");
+            }
+        }
+
         // Check if already assigned to prevent duplicate notifications
         List<BusinessStaff> existingStaff = businessStaffRepository.findByBusinessId(businessId);
         for (BusinessStaff bs : existingStaff) {
@@ -203,5 +244,35 @@ public class BusinessService {
 
         businessStaffRepository.delete(staffAssignment);
         return ApiResponse.ok(null);
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<Map<String, Object>> checkStaffLimit(String ownerEmail) {
+        User owner = userRepository.findByEmail(ownerEmail).orElse(null);
+        if (owner == null) {
+            return ApiResponse.fail("NOT_FOUND", "Owner not found");
+        }
+
+        boolean isBasic = true;
+        if ("PRO".equals(owner.getSubscriptionStatus())) {
+            if (owner.getSubscriptionEndDate() == null || java.time.LocalDateTime.now().isBefore(owner.getSubscriptionEndDate())) {
+                isBasic = false;
+            }
+        }
+
+        if (isBasic) {
+            List<Business> businesses = businessRepository.findByOwnerId(owner.getId());
+            long totalStaffCount = businesses.stream()
+                .mapToLong(b -> businessStaffRepository.findByBusinessId(b.getId()).size())
+                .sum();
+                
+            if (totalStaffCount >= 3) {
+                return ApiResponse.fail("LIMIT_EXCEEDED", "Starter plan is limited to 3 staff accounts total. Please upgrade to Pro.");
+            }
+        }
+
+        Map<String, Object> data = new java.util.HashMap<>();
+        data.put("allowed", true);
+        return ApiResponse.ok(data);
     }
 }

@@ -1,0 +1,420 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Multi-Biz Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#d3e4ff",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "tertiary": "#00573a",
+                        "on-background": "#1e1a23",
+                        "on-secondary-container": "#3c597f",
+                        "outline-variant": "#cec2d6",
+                        "secondary": "#426086",
+                        "surface": "#fff7ff",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#29486d",
+                        "surface-container": "#f5ebf8",
+                        "on-primary-container": "#ffffff",
+                        "tertiary-fixed": "#6ffbbe",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#342e38",
+                        "on-tertiary-container": "#6dfabc",
+                        "slate-text": "#0f172a",
+                        "surface-dim": "#e1d7e4",
+                        "tertiary-container": "#00724e",
+                        "secondary-fixed-dim": "#aac8f4",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f8edfb",
+                        "primary-fixed": "#e2eefa",
+                        "surface-variant": "#e9dfed",
+                        "secondary-container": "#b3d1fd",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#051322",
+                        "on-tertiary-fixed": "#002113",
+                        "surface-container-high": "#efe5f2",
+                        "on-primary-fixed-variant": "#081c33",
+                        "slate-muted": "#64748b",
+                        "background-light": "#f7f6f8",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#a6c7ec",
+                        "on-surface": "#1e1a23",
+                        "primary": "#123458",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "outline": "#7d7385",
+                        "error": "#ba1a1a",
+                        "background": "#fff7ff",
+                        "border-subtle": "#e2e8f0",
+                        "surface-tint": "#123458",
+                        "on-surface-variant": "#4c4354",
+                        "inverse-primary": "#a6c7ec",
+                        "surface-container-low": "#fbf0fe",
+                        "background-dark": "#130c1a",
+                        "surface-container-highest": "#e9dfed",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "neutral-surface": "#ede9f2",
+                        "surface-bright": "#fff7ff",
+                        "primary-container": "#0b2038",
+                        "on-secondary-fixed": "#001c38"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-tight": "0.5rem",
+                        "stack-base": "1rem",
+                        "container-max": "1200px",
+                        "card-padding": "1.5rem",
+                        "section-gap": "2rem",
+                        "gutter": "1.5rem",
+                        "edge-margin": "2rem"
+                    },
+                    "fontFamily": {
+                        "label-bold": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-bold": ["14px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "display-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "900" }],
+                        "title-sm": ["18px", { "lineHeight": "1.4", "fontWeight": "700" }],
+                        "display-lg": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "900" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light text-on-surface font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container" data-mode="connect">
+<!-- TopNavBar -->
+<nav class="bg-surface/90 dark:bg-background-dark/90 backdrop-blur-md text-primary dark:text-primary-fixed-dim border-b border-outline-variant dark:border-outline docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center w-full px-edge-margin max-w-container-max mx-auto h-16">
+<div class="flex items-center gap-gutter">
+<a class="text-title-sm font-label-bold text-on-surface dark:text-surface-bright tracking-tight" href="#">Multi-Biz</a>
+<div class="hidden md:flex items-center gap-stack-base ml-8">
+<a class="text-label-bold font-label-bold text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#features">Features</a>
+<a class="text-label-bold font-label-bold text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#roles">Roles</a>
+<a class="text-label-bold font-label-bold text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#pricing">Pricing</a>
+</div>
+</div>
+<div class="flex items-center gap-stack-base">
+<a class="text-label-bold font-label-bold text-on-surface hover:text-primary transition-colors hidden sm:block" href="#">Login</a>
+<a class="bg-primary text-on-primary px-4 py-2 rounded text-label-bold font-label-bold hover:bg-primary-container hover:text-on-primary-container transition-colors" href="#">Get Started</a>
+</div>
+</div>
+</nav>
+<main>
+<!-- Hero Section -->
+<section class="px-edge-margin py-20 max-w-container-max mx-auto overflow-hidden">
+<div class="grid lg:grid-cols-2 gap-12 items-center">
+<div class="space-y-6">
+<h1 class="text-display-lg-mobile lg:text-display-lg font-display-lg-mobile lg:font-display-lg text-slate-text">
+                        Manage Your Business Operations from a Single Dashboard.
+                    </h1>
+<p class="text-body-md font-body-md text-on-surface-variant max-w-xl">
+                        A clean and secure multi-tenant platform. Manage your staff, track daily logs, and process payments safely in one centalized system.
+                    </p>
+<div class="pt-4">
+<a class="inline-flex bg-primary text-on-primary px-6 py-3 rounded text-label-bold font-label-bold hover:bg-primary-container hover:text-on-primary-container transition-colors" href="#">
+                            Get Started
+                        </a>
+</div>
+</div>
+<div class="relative">
+<div class="bg-surface border border-border-subtle rounded-lg p-card-padding shadow-sm relative z-10">
+<div class="border-b border-border-subtle pb-4 mb-6 flex justify-between items-center">
+<span class="text-title-sm font-title-sm text-slate-text">Owner Dashboard</span>
+<span class="material-symbols-outlined text-outline">more_horiz</span>
+</div>
+<div class="space-y-4">
+<div class="h-12 bg-neutral-surface rounded w-full"></div>
+<div class="grid grid-cols-2 gap-4">
+<div class="h-24 bg-neutral-surface rounded w-full"></div>
+<div class="h-24 bg-neutral-surface rounded w-full"></div>
+</div>
+<div class="h-32 bg-neutral-surface rounded w-full"></div>
+</div>
+</div>
+<div class="absolute -top-4 -right-4 w-full h-full bg-surface-container rounded-lg -z-10 border border-outline-variant/30"></div>
+</div>
+</div>
+</section>
+<!-- Core Features -->
+<section class="bg-surface-container-lowest border-y border-border-subtle py-20" id="features">
+<div class="px-edge-margin max-w-container-max mx-auto"><div class="text-center mb-16">
+<h2 class="text-headline-md font-headline-md text-slate-text">Core Features</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Feature 1 -->
+<div class="bg-surface border border-border-subtle p-card-padding rounded-lg group hover:border-primary/50 transition-colors flex flex-col">
+<div class="w-12 h-12 bg-primary-container text-on-primary-container rounded flex items-center justify-center mb-6">
+<span class="material-symbols-outlined">hub</span>
+</div>
+<h3 class="text-title-sm font-title-sm text-slate-text mb-3">Centralized Multi-Business Management</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant flex-grow">
+            Stop juggling spreadsheets. Create, manage, and monitor multiple micro-businesses or branches from a single, unified command center.
+        </p>
+</div>
+<!-- Feature 2 -->
+<div class="bg-surface border border-border-subtle p-card-padding rounded-lg group hover:border-primary/50 transition-colors flex flex-col">
+<div class="w-12 h-12 bg-tertiary-container text-on-tertiary-container rounded flex items-center justify-center mb-6">
+<span class="material-symbols-outlined">smartphone</span>
+</div>
+<h3 class="text-title-sm font-title-sm text-slate-text mb-3">Dedicated Staff Mobile App</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant flex-grow">
+            Empower your team with a native Android application. Staff can easily log daily income, track expenses, and upload receipt images directly from their phones.
+        </p>
+</div>
+<!-- Feature 3 -->
+<div class="bg-surface border border-border-subtle p-card-padding rounded-lg group hover:border-primary/50 transition-colors flex flex-col">
+<div class="w-12 h-12 bg-secondary-container text-on-secondary-container rounded flex items-center justify-center mb-6">
+<span class="material-symbols-outlined">monitoring</span>
+</div>
+<h3 class="text-title-sm font-title-sm text-slate-text mb-3">Real-Time Revenue Dashboard</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant flex-grow">
+            Watch your empire grow in real-time. Our web dashboard uses advanced data-polling to instantly update your charts and analytics.
+        </p>
+</div>
+<!-- Feature 4 -->
+<div class="bg-surface border border-border-subtle p-card-padding rounded-lg group hover:border-primary/50 transition-colors flex flex-col">
+<div class="w-12 h-12 bg-primary-container text-on-primary-container rounded flex items-center justify-center mb-6">
+<span class="material-symbols-outlined">admin_panel_settings</span>
+</div>
+<h3 class="text-title-sm font-title-sm text-slate-text mb-3">Strict Role-Based Security</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant flex-grow">
+            Multi-Biz features robust Role-Based Access Control (RBAC), ensuring a strict separation between Business Owners and Staff.
+        </p>
+</div>
+<!-- Feature 5 -->
+<div class="bg-surface border border-border-subtle p-card-padding rounded-lg group hover:border-primary/50 transition-colors flex flex-col">
+<div class="w-12 h-12 bg-tertiary-container text-on-tertiary-container rounded flex items-center justify-center mb-6">
+<span class="material-symbols-outlined">receipt_long</span>
+</div>
+<h3 class="text-title-sm font-title-sm text-slate-text mb-3">Digital Receipt Storage</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant flex-grow">
+            Say goodbye to lost paper trails. Staff can snap photos of physical receipts via the mobile app, securely uploading and attaching them to transactions.
+        </p>
+</div>
+<!-- Feature 6 -->
+<div class="bg-surface border border-border-subtle p-card-padding rounded-lg group hover:border-primary/50 transition-colors flex flex-col">
+<div class="w-12 h-12 bg-secondary-container text-on-secondary-container rounded flex items-center justify-center mb-6">
+<span class="material-symbols-outlined">mail</span>
+</div>
+<h3 class="text-title-sm font-title-sm text-slate-text mb-3">Automated Email CSV Reports</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant flex-grow">
+            Your accounting, simplified. Generate comprehensive CSV financial reports and have them delivered directly to your email inbox.
+        </p>
+</div>
+<!-- Feature 7 -->
+<div class="bg-surface border border-border-subtle p-card-padding rounded-lg group hover:border-primary/50 transition-colors flex flex-col">
+<div class="w-12 h-12 bg-primary-container text-on-primary-container rounded flex items-center justify-center mb-6">
+<span class="material-symbols-outlined">currency_exchange</span>
+</div>
+<h3 class="text-title-sm font-title-sm text-slate-text mb-3">Live Currency Conversion</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant flex-grow">
+            Multi-Biz integrates directly with external financial APIs to provide real-time currency conversions (e.g., PHP to USD) right on your dashboard.
+        </p>
+</div>
+<!-- Feature 8 -->
+<div class="bg-surface border border-border-subtle p-card-padding rounded-lg group hover:border-primary/50 transition-colors flex flex-col">
+<div class="w-12 h-12 bg-tertiary-container text-on-tertiary-container rounded flex items-center justify-center mb-6">
+<span class="material-symbols-outlined">login</span>
+</div>
+<h3 class="text-title-sm font-title-sm text-slate-text mb-3">Seamless Google OAuth Login</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant flex-grow">
+            Frictionless onboarding. Users can register and log in securely using their existing Google accounts.
+        </p>
+</div>
+</div></div>
+</section>
+<!-- Role Showcase -->
+<section class="py-20 px-edge-margin max-w-container-max mx-auto" id="roles">
+<div class="text-center mb-12">
+<h2 class="text-headline-md font-headline-md text-slate-text">Designed for Your Entire Team</h2>
+</div>
+<div class="max-w-3xl mx-auto border border-border-subtle rounded-lg overflow-hidden bg-surface">
+<!-- Interactive Tabs (Simulated visual state) -->
+<div class="flex border-b border-border-subtle bg-surface-container-lowest">
+<button class="flex-1 py-4 px-6 text-label-bold font-label-bold transition-colors focus:outline-none text-on-surface-variant" id="tab-owner">
+                        Business Owner
+                    </button>
+<button class="flex-1 py-4 px-6 text-label-bold font-label-bold hover:text-slate-text hover:bg-surface transition-colors focus:outline-none text-primary border-b-2 border-primary bg-surface" id="tab-staff">
+                        Staff Member
+                    </button>
+</div>
+<!-- Tab Content Panel -->
+<div class="p-8"><div id="tab-owner-content" class="transition-opacity duration-300 hidden">
+    <div class="flex gap-6 items-start">
+        <div class="w-16 h-16 bg-primary-fixed rounded flex-shrink-0 flex items-center justify-center text-on-primary-fixed">
+            <span class="material-symbols-outlined" style="font-variation-settings: &quot;OPSZ&quot; 32;">storefront</span>
+        </div>
+        <div>
+            <h3 class="text-title-sm font-title-sm text-slate-text mb-2">Business Owner Overview</h3>
+            <p class="text-body-md font-body-md text-on-surface-variant">
+                Total control from a unified command center. Monitor real-time analytics across multiple branches, assign staff to specific locations, manage premium subscriptions, and generate comprehensive CSV reports—all from an intuitive web dashboard.
+            </p>
+        </div>
+    </div>
+</div>
+<div id="tab-staff-content" class="transition-opacity duration-300 block">
+    <div class="flex gap-6 items-start">
+        <div class="w-16 h-16 bg-secondary-fixed rounded flex-shrink-0 flex items-center justify-center text-on-secondary-fixed">
+            <span class="material-symbols-outlined" style="font-variation-settings: &quot;OPSZ&quot; 32;">badge</span>
+        </div>
+        <div>
+            <h3 class="text-title-sm font-title-sm text-slate-text mb-2">Staff Member Overview</h3>
+            <p class="text-body-md font-body-md text-on-surface-variant">
+                Streamlined access for daily operations. Securely record face-to-face transactions, upload receipt images, and view personal daily sales logs through a dedicated mobile app, without having access to sensitive overarching business settings.
+            </p>
+        </div>
+    </div>
+</div></div>
+</div>
+</section>
+<!-- Pricing Section -->
+<section class="bg-surface-container-lowest border-t border-border-subtle px-edge-margin pt-20 pb-8" id="pricing">
+<div class="max-w-container-max mx-auto">
+<div class="text-center mb-16">
+<h2 class="text-headline-md font-headline-md text-slate-text">Simple, Transparent Pricing</h2>
+</div>
+<div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto"><!-- Starter Card -->
+<div class="bg-white border border-border-subtle rounded-xl flex flex-col shadow-sm p-6">
+<div class="mb-8">
+<h3 class="text-title-sm font-title-sm text-[#123458] mb-4">Starter Plan (Basic)</h3>
+<div class="flex items-baseline gap-1">
+<span class="text-display-lg font-display-lg text-[#123458]">₱0</span>
+<span class="text-body-sm text-on-surface-variant">/mo</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mt-4">A small, single-location business just getting started with digital management.</p>
+</div>
+<ul class="space-y-4 mb-2">
+<li class="flex items-center text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-tertiary mr-3 text-[18px]">check</span>Manage 1 Business Location
+    </li>
+<li class="flex items-center text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-tertiary mr-3 text-[18px]">check</span>Up to 3 Staff Accounts
+    </li>
+<li class="flex items-center text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-tertiary mr-3 text-[18px]">check</span>Dedicated Staff Mobile App
+    </li>
+<li class="flex items-center text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-tertiary mr-3 text-[18px]">check</span>Real-time Web Dashboard
+    </li>
+<li class="flex items-center text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-tertiary mr-3 text-[18px]">check</span>Download CSV Reports
+    </li>
+<li class="flex items-center text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-tertiary mr-3 text-[18px]">check</span>Send Reports via Email
+    </li>
+</ul>
+
+</div>
+<!-- Pro Card -->
+<div class="bg-white border-2 border-[#123458] rounded-xl flex flex-col relative shadow-lg p-6">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
+<span class="bg-[#123458] text-white text-[11px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest">Most Popular</span>
+</div>
+<div class="mb-8">
+<h3 class="text-title-sm font-title-sm text-[#123458] mb-4">Multi-Biz Pro Plan</h3>
+<div class="flex items-baseline gap-1">
+<span class="text-display-lg font-display-lg text-[#123458]">₱500</span>
+<span class="text-body-sm text-on-surface-variant">/mo</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mt-4">A scaling business owner expanding to new locations and hiring a larger team.</p>
+</div>
+<ul class="space-y-4 mb-2">
+<li class="flex items-center text-body-sm text-slate-text font-medium">
+<span class="material-symbols-outlined text-tertiary mr-3 text-[18px]">check</span>Unlimited Business Locations
+    </li>
+<li class="flex items-center text-body-sm text-slate-text font-medium">
+<span class="material-symbols-outlined text-tertiary mr-3 text-[18px]">check</span>Unlimited Staff Accounts
+    </li>
+<li class="flex items-center text-body-sm text-slate-text font-medium">
+<span class="material-symbols-outlined text-tertiary mr-3 text-[18px]">check</span>Dedicated Staff Mobile App
+    </li>
+<li class="flex items-center text-body-sm text-slate-text font-medium">
+<span class="material-symbols-outlined text-tertiary mr-3 text-[18px]">check</span>Real-time Web Dashboard
+    </li>
+<li class="flex items-center text-body-sm text-slate-text font-medium">
+<span class="material-symbols-outlined text-tertiary mr-3 text-[18px]">check</span>Download CSV Reports
+    </li>
+<li class="flex items-center text-body-sm text-slate-text font-medium">
+<span class="material-symbols-outlined text-tertiary mr-3 text-[18px]">check</span>Send Reports via Email
+    </li>
+</ul>
+
+</div></div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container dark:bg-background-dark text-secondary dark:text-secondary-fixed-dim border-t border-outline-variant dark:border-outline full-width py-section-gap">
+<div class="flex flex-col items-center justify-center w-full px-edge-margin max-w-container-max mx-auto text-center space-y-stack-base">
+<div class="mb-8">
+<h2 class="text-title-sm font-title-sm text-slate-text mb-4">Ready to organize your business?</h2>
+<a class="inline-block bg-primary text-on-primary px-6 py-2 rounded text-label-bold font-label-bold hover:bg-primary-container hover:text-on-primary-container transition-colors" href="#">
+                    Create Account
+                </a>
+</div>
+<a class="text-title-sm font-label-bold text-on-surface dark:text-surface-bright tracking-tight mb-4 block" href="#">Multi-Biz</a>
+<div class="flex flex-wrap justify-center gap-6 mb-6">
+<a class="text-label-sm font-label-sm text-slate-muted dark:text-surface-variant hover:text-on-surface dark:hover:text-on-surface-variant transition-all duration-200 ease-in-out" href="#">Privacy Policy</a>
+<a class="text-label-sm font-label-sm text-slate-muted dark:text-surface-variant hover:text-on-surface dark:hover:text-on-surface-variant transition-all duration-200 ease-in-out" href="#">Terms of Service</a>
+<a class="text-label-sm font-label-sm text-slate-muted dark:text-surface-variant hover:text-on-surface dark:hover:text-on-surface-variant transition-all duration-200 ease-in-out" href="#">Contact Support</a>
+<a class="text-label-sm font-label-sm text-slate-muted dark:text-surface-variant hover:text-on-surface dark:hover:text-on-surface-variant transition-all duration-200 ease-in-out" href="#">System Status</a>
+</div>
+<p class="text-body-sm font-body-sm text-slate-muted dark:text-surface-variant mt-8">
+                © 2026 Multi-Biz Management System
+            </p>
+</div>
+</footer>
+
+
+<script>
+    const ownerTab = document.getElementById('tab-owner');
+    const staffTab = document.getElementById('tab-staff');
+    const ownerContent = document.getElementById('tab-owner-content');
+    const staffContent = document.getElementById('tab-staff-content');
+
+    function switchTab(activeTab, activeContent, inactiveTab, inactiveContent) {
+        activeTab.classList.add('text-primary', 'border-b-2', 'border-primary', 'bg-surface');
+        activeTab.classList.remove('text-on-surface-variant');
+        inactiveTab.classList.remove('text-primary', 'border-b-2', 'border-primary', 'bg-surface');
+        inactiveTab.classList.add('text-on-surface-variant');
+        
+        activeContent.classList.remove('hidden');
+        activeContent.classList.add('block');
+        inactiveContent.classList.remove('block');
+        inactiveContent.classList.add('hidden');
+    }
+
+    ownerTab.addEventListener('click', () => switchTab(ownerTab, ownerContent, staffTab, staffContent));
+    staffTab.addEventListener('click', () => switchTab(staffTab, staffContent, ownerTab, ownerContent));
+</script>
+
+</body></html>

@@ -52,6 +52,9 @@ public class UserController {
         profile.put("email", user.getEmail());
         profile.put("role", user.getRole());
         profile.put("subscriptionStatus", user.getSubscriptionStatus());
+        if (user.getSubscriptionEndDate() != null) {
+            profile.put("subscriptionEndDate", user.getSubscriptionEndDate().toString());
+        }
         profile.put("createdAt", user.getCreatedAt().toString());
         profile.put("profilePictureUrl", user.getProfilePictureUrl()); // null if not set
 
