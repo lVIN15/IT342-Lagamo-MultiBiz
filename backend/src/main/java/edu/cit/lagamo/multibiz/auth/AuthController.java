@@ -136,6 +136,14 @@ public class AuthController {
                     .body(ApiResponse.fail("OWNER_NOT_ALLOWED",
                             "This account is registered as an Owner. Please use the Web platform to access your account."));
         }
+
+        // Web-only: Block STAFF logins from the Web app
+        if (!"android".equalsIgnoreCase(platform) && "STAFF".equalsIgnoreCase(user.getRole())) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.fail("STAFF_NOT_ALLOWED",
+                            "This account is registered as Staff. Please use the Mobile App to log your transactions."));
+        }
         // END
         // Generate tokens & persist refresh token (rotate: delete old ones first)
         refreshTokenRepository.deleteByUserId(user.getId());
@@ -163,8 +171,20 @@ public class AuthController {
     // ── POST /api/auth/google ────────────────────────────────────────────────
 
     @PostMapping("/google")
-    public ResponseEntity<ApiResponse<?>> googleLogin(@Valid @RequestBody GoogleTokenRequest request) {
+    public ResponseEntity<ApiResponse<?>> googleLogin(
+            @Valid @RequestBody GoogleTokenRequest request,
+            @RequestHeader(value = "X-Platform", required = false) String platform) {
         Map<String, Object> data = authService.verifyGoogleTokenAndAuthenticate(request.getToken());
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> userMap = (Map<String, Object>) data.get("user");
+        if (userMap != null && !"android".equalsIgnoreCase(platform) && "STAFF".equalsIgnoreCase((String) userMap.get("role"))) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.fail("STAFF_NOT_ALLOWED",
+                            "This account is registered as Staff. Please use the Mobile App to log your transactions."));
+        }
+
         return ResponseEntity.ok(ApiResponse.ok(data));
     }
 
